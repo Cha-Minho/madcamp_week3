@@ -1,0 +1,66 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방송 플랫폼</title>
+  <link rel="stylesheet" href="./static/css/styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+  <<header class="header">
+    <nav class="navbar">
+      <div class="logo">
+        로고
+      </div>
+      <div class="menu">
+        <ul>
+          <li><a href="#">홈</a></li>
+          <li><a href="{% url 'live' %}">라이브 변경완료</a></li>
+          <li><a href="#">동영상</a></li>
+          <li><a href="{% url 'community' %}">커뮤니티</a></li>
+        </ul>
+      </div>
+      <div class="auth-buttons">
+        <a id="loginButton" href="{% url 'login' %}" >로그인</a>
+        <a id="signupButton" href="{% url 'signup' %}" >회원가입</a>
+        <div id="welcomeMessage" style="display: none;"></div>
+        <a id="logoutButton" href="{% url 'logout' %}" >로그아웃</a>
+      </div>
+      
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <section class="hero-section">
+      <h1>방송 플랫폼에 오신 것을 환영합니다</h1>
+      <p>다양한 라이브 방송과 동영상을 즐겨보세요.</p>
+    </section>
+
+    <section class="featured-section">
+      <h2>주요 컨텐츠</h2>
+      <div class="featured-items">
+        <!-- 주요 컨텐츠 아이템들 -->
+      </div>
+    </section>
+
+    <section class="community-section">
+      <h2>커뮤니티</h2>
+      <div class="community-content">
+        <!-- 커뮤니티 내용 -->
+      </div>
+    </section>
+  </main>>
+
+  <footer class="footer">
+    <p>방송 플랫폼 &copy; 2023. All rights reserved.</p>
+  </footer>
+  <script src="./static/js/script.js"></script>
+</body>
+
+</html>
