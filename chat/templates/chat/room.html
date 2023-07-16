@@ -21,6 +21,7 @@
             );
 
             chatSocket.onopen = function(e) {
+                chatLog.value += "커뮤니티에 입장하였습니다.\n";
                 document.querySelector('#chat-message-submit').onclick = function(e) {
                     var messageInputDom = document.querySelector('#chat-message-input');
                     var message = messageInputDom.value;

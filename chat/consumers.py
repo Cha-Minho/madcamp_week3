@@ -26,18 +26,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     # Receive message from WebSocket
+    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-
+        # username = text_data_json.get('username', 'anonymous')  # 유저 이름을 가져오되, 없으면 'anonymous'를 기본값으로 사용
+        username = self.scope["session"]["username"]
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': message
+                'message': f'{username}: {message}'  # 유저 이름과 메시지 함께 보내기
             }
         )
+
 
     # Receive message from room group
     async def chat_message(self, event):

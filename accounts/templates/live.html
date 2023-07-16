@@ -59,7 +59,7 @@
             <div id="donationMsg"></div>
         </div>
         <div id="chat-container">
-            <textarea id="chat-log" cols="10" rows="100"></textarea><br>
+            <textarea id="chat-log" cols="10" rows="100" readonly></textarea><br>
             <input id="chat-message-input" type="text" size="10"><br>
             <input id="chat-message-submit" type="button" value="Send">
             {{ room_name|json_script:"room-name" }}
@@ -71,7 +71,7 @@
         var donateBtn = document.getElementById('donateBtn');
 
         // Create WebSocket connection.
-        var socket = new WebSocket('wss://600e-192-249-19-234.ngrok-free.app/ws/donations/');
+        var socket = new WebSocket('wss://a5e8-192-249-19-234.ngrok-free.app/ws/donations/');
 
         // Connection opened
         // Connection opened
@@ -115,7 +115,7 @@
             video.play();
           });
         }
-        
+
         else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           video.src = 'https://600e-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
           video.addEventListener('loadedmetadata', function() {
@@ -127,6 +127,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const chatLog = document.querySelector('#chat-log');
+            const userNameDisplay = document.querySelector('#user-name-display'); // 유저 이름을 보여줄 요소
 
             // WebSocket 연결 설정과 이벤트 핸들러
             const chatSocket = new WebSocket(
@@ -134,14 +135,19 @@
             );
 
             chatSocket.onopen = function(e) {
-                document.querySelector('#chat-message-submit').onclick = function(e) {
-                    var messageInputDom = document.querySelector('#chat-message-input');
-                    var message = messageInputDom.value;
-                    chatSocket.send(JSON.stringify({
-                        'message': message
-                    }));
-                    messageInputDom.value = '';
-                };
+              const username = getCookie('username');
+              console.log(username)
+              chatLog.value += "채팅창에 입장하였습니다.\n";
+              document.querySelector('#chat-message-submit').onclick = function(e) {
+                  var messageInputDom = document.querySelector('#chat-message-input');
+                  var message = messageInputDom.value;
+                  chatSocket.send(JSON.stringify({
+                      'type': 'chat',
+                      'user_name': username,
+                      'message': message
+                  }));
+                  messageInputDom.value = '';
+              };
             };
 
             chatSocket.onmessage = function(e) {
@@ -164,12 +170,20 @@
             document.querySelector('#chat-message-submit').onclick = function(e) {
                 const messageInputDom = document.querySelector('#chat-message-input');
                 const message = messageInputDom.value;
+                const username = getCookie('username');  // 유저 이름 가져오기
                 chatSocket.send(JSON.stringify({
-                    'message': message
+                    'message': message,
+                    'username': username  // 유저 이름 함께 보내기
                 }));
                 messageInputDom.value = '';
             };
         });
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
     </script>
 </body>
 </html>

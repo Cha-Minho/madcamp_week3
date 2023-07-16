@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import StreamingHttpResponse, JsonResponse
 import requests
+import ffmpeg
 
 @csrf_exempt
 def signup(request):
@@ -31,8 +32,8 @@ def user_login(request):
             if password == user.password:
                 request.session['username'] = user.username
                 request.session['isAuthenticated'] = 'true'
-                print(request.session['username'])
-                return redirect('home')
+                response = redirect('home')
+                return response
             else:
                 form.add_error(None, 'Invalid username or password')
         else:
@@ -51,8 +52,8 @@ def user_logout(request):
     request.session.modified = True
     return redirect('home')
 
-def live_streaming_on(request):
-    return render(request, 'live_streaming_on.html')
+# def live_streaming_on(request):
+#     return render(request, 'live_streaming_on.html')
 
 def get_session_data(request):
     username = request.session.get('username')
@@ -90,3 +91,15 @@ def proxy_view(request, path=''):
     response = StreamingHttpResponse((chunk for chunk in req.iter_content(chunk_size=512)), content_type=req.headers['content-type'])
 
     return response
+
+
+def capture_frame(video_url, image_path):
+    try:
+        (
+            ffmpeg
+            .input(video_url, ss=0)
+            .output(image_path, vframes=1)
+            .run(capture_stdout=True, capture_stderr=True)
+        )
+    except ffmpeg.Error as e:
+        print(f'ffmpeg error: {e.stderr.decode()}')
