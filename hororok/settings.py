@@ -31,6 +31,9 @@ ALLOWED_HOSTS = ['b402-192-249-19-234.ngrok-free.app', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'chat',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,19 +43,17 @@ INSTALLED_APPS = [
     'hororok',
     'accounts',
     'corsheaders',
-    'chat',
-    'channels',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'hororok.urls'
@@ -119,6 +120,8 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = False
 
 
@@ -140,3 +143,13 @@ AUTHENTICATION_BACKENDS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+ASGI_APPLICATION = 'hororok.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

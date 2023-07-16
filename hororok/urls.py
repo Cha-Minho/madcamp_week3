@@ -12,7 +12,7 @@ urlpatterns = [
     path('stream_video/', views.stream_video, name='stream_video'),
     path('live/', views.live, name='live'),
     path('get_session_data/', views.get_session_data, name='get_session_data'),
-    path('community/', views_chat.chatting, name='community'),
-    path('community/<str:room_name>/', views_chat.room, name='room'),
+    path('chat/', views_chat.index, name='chat'),
+    path('chat/<str:room_name>/', views_chat.room, name='room'),
     path('proxy/<path:path>', views.proxy_view),
 ]

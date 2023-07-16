@@ -3,11 +3,63 @@
   <head>
     <title>Live Stream Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        #donationMsg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            display: none;
+        }
+    </style>
   </head>
   <body>
     <video id="video" controls></video>
+    <button id="donateBtn">Donate</button>
+    <div id="donationMsg"></div>
     <script>
       var video = document.getElementById('video');
+      var donationMsg = document.getElementById('donationMsg');
+      var donateBtn = document.getElementById('donateBtn');
+
+      // Create WebSocket connection.
+      var socket = new WebSocket('wss://b402-192-249-19-234.ngrok-free.app/ws/donations/');
+
+      // Connection opened
+      // Connection opened
+      socket.addEventListener('open', function (event) {
+          socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
+      });
+
+
+      // Listen for messages
+      socket.addEventListener('message', function (event) {
+        var data = JSON.parse(event.data);
+        var message = data.message;
+        if(message) {
+          donationMsg.innerHTML = message;
+          donationMsg.style.display = 'block';
+          setTimeout(function() {
+            donationMsg.style.display = 'none';
+          }, 5000);
+        }
+      });
+      
+      donateBtn.addEventListener('click', function() {
+        var donationAmount = prompt("Please enter your donation amount:");
+        if(donationAmount) {
+          socket.send(JSON.stringify({
+            type: 'donation',
+            message: 'A donation has been made.', // 이 부분 추가
+            amount: donationAmount
+          }));
+        }
+      });
+
+
       if(Hls.isSupported()) {
         var hls = new Hls();
         hls.loadSource('https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
