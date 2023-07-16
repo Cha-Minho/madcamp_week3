@@ -1,9 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Live Stream Player</title>
+<head>
+    <title>Live Stream Player & Chat Room</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
+        #main-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        #video-container {
+            flex: 0.6;
+        }
+        #chat-container {
+            flex: 0.4;
+            overflow-y: auto;
+            height: 500px;
+        }
+        #chat-log {
+            height: 90%;
+            width: 100%;
+        }
+        #chat-message-input {
+            width: 90%;
+        }
+        #chat-message-submit {
+            width: 9%;
+        }
         #donationMsg {
             position: absolute;
             top: 50%;
@@ -15,66 +37,122 @@
             display: none;
         }
     </style>
-  </head>
-  <body>
-    <video id="video" controls></video>
-    <button id="donateBtn">Donate</button>
-    <div id="donationMsg"></div>
+</head>
+<body>
+    <div id="main-container">
+        <div id="video-container">
+            <video id="video" controls></video>
+            <button id="donateBtn">Donate</button>
+            <div id="donationMsg"></div>
+        </div>
+        <div id="chat-container">
+            <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+            <input id="chat-message-input" type="text" size="100"><br>
+            <input id="chat-message-submit" type="button" value="Send">
+            {{ room_name|json_script:"room-name" }}
+        </div>
+    </div>
     <script>
-      var video = document.getElementById('video');
-      var donationMsg = document.getElementById('donationMsg');
-      var donateBtn = document.getElementById('donateBtn');
+        var video = document.getElementById('video');
+        var donationMsg = document.getElementById('donationMsg');
+        var donateBtn = document.getElementById('donateBtn');
 
-      // Create WebSocket connection.
-      var socket = new WebSocket('wss://b402-192-249-19-234.ngrok-free.app/ws/donations/');
+        // Create WebSocket connection.
+        var socket = new WebSocket('wss://b402-192-249-19-234.ngrok-free.app/ws/donations/');
 
-      // Connection opened
-      // Connection opened
-      socket.addEventListener('open', function (event) {
-          socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
-      });
-
-
-      // Listen for messages
-      socket.addEventListener('message', function (event) {
-        var data = JSON.parse(event.data);
-        var message = data.message;
-        if(message) {
-          donationMsg.innerHTML = message;
-          donationMsg.style.display = 'block';
-          setTimeout(function() {
-            donationMsg.style.display = 'none';
-          }, 5000);
-        }
-      });
-      
-      donateBtn.addEventListener('click', function() {
-        var donationAmount = prompt("Please enter your donation amount:");
-        if(donationAmount) {
-          socket.send(JSON.stringify({
-            type: 'donation',
-            message: 'A donation has been made.', // 이 부분 추가
-            amount: donationAmount
-          }));
-        }
-      });
-
-
-      if(Hls.isSupported()) {
-        var hls = new Hls();
-        hls.loadSource('https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-          video.play();
+        // Connection opened
+        // Connection opened
+        socket.addEventListener('open', function (event) {
+            socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
         });
-      }
-      else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = 'https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
-        video.addEventListener('loadedmetadata', function() {
-          video.play();
+
+
+        // Listen for messages
+        socket.addEventListener('message', function (event) {
+          var data = JSON.parse(event.data);
+          var message = data.message;
+          if(message) {
+            donationMsg.innerHTML = message;
+            donationMsg.style.display = 'block';
+            setTimeout(function() {
+              donationMsg.style.display = 'none';
+            }, 5000);
+          }
         });
-      }
+        
+        donateBtn.addEventListener('click', function() {
+          var donationAmount = prompt("Please enter your donation amount:");
+          if(donationAmount) {
+            socket.send(JSON.stringify({
+              type: 'donation',
+              message: 'A donation has been made.', // 이 부분 추가
+              amount: donationAmount
+            }));
+          }
+        });
+
+
+        if(Hls.isSupported()) {
+          var hls = new Hls();
+          hls.loadSource('https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+          });
+        }
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = 'https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+          video.addEventListener('loadedmetadata', function() {
+            video.play();
+          });
+        }
+
+        const roomName = "live";
+
+        const chatSocket = new WebSocket(
+            'wss://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onopen = function(e) {
+            document.querySelector('#chat-message-submit').onclick = function(e) {
+                var messageInputDom = document.querySelector('#chat-message-input');
+                var message = messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+
+                messageInputDom.value = '';
+            };
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
     </script>
-    
-  </body>
+</body>
 </html>
