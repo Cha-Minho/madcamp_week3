@@ -7,34 +7,47 @@
         #main-container {
             display: flex;
             justify-content: space-around;
+            height: 100vh;
         }
         #video-container {
-            flex: 0.6;
+            flex: 0.8;
+            height: 100%;
         }
         #chat-container {
-            flex: 0.4;
+            flex: 0.2;
             overflow-y: auto;
-            height: 500px;
+            height: 100%;
+        }
+        #video {
+          width: 98%;  /* 비디오 요소의 너비를 컨테이너의 100%로 설정 */
+          height: 90%;  /* 비디오 요소의 높이를 컨테이너의 100%로 설정 */
+          object-fit: cover;  /* 비디오의 비율이 유지되면서 가능한 많은 영역을 채우도록 설정 */
         }
         #chat-log {
             height: 90%;
-            width: 100%;
+            width: 90%;
         }
         #chat-message-input {
             width: 90%;
         }
         #chat-message-submit {
-            width: 9%;
+            width: 15%;
+        }
+        @keyframes fade-in-out {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
         }
         #donationMsg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            display: none;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: white;
+          background: rgba(0, 0, 0, 0.5);
+          padding: 10px;
+          display: none;
+          animation: fade-in-out 5s; 
         }
     </style>
 </head>
@@ -46,8 +59,8 @@
             <div id="donationMsg"></div>
         </div>
         <div id="chat-container">
-            <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-            <input id="chat-message-input" type="text" size="100"><br>
+            <textarea id="chat-log" cols="10" rows="100"></textarea><br>
+            <input id="chat-message-input" type="text" size="10"><br>
             <input id="chat-message-submit" type="button" value="Send">
             {{ room_name|json_script:"room-name" }}
         </div>
@@ -58,7 +71,7 @@
         var donateBtn = document.getElementById('donateBtn');
 
         // Create WebSocket connection.
-        var socket = new WebSocket('wss://b402-192-249-19-234.ngrok-free.app/ws/donations/');
+        var socket = new WebSocket('wss://600e-192-249-19-234.ngrok-free.app/ws/donations/');
 
         // Connection opened
         // Connection opened
@@ -66,7 +79,8 @@
             socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
         });
 
-
+        
+        var audio = new Audio("/static/src/donation.mp3")
         // Listen for messages
         socket.addEventListener('message', function (event) {
           var data = JSON.parse(event.data);
@@ -77,6 +91,7 @@
             setTimeout(function() {
               donationMsg.style.display = 'none';
             }, 5000);
+            audio.play();
           }
         });
         
@@ -94,14 +109,15 @@
 
         if(Hls.isSupported()) {
           var hls = new Hls();
-          hls.loadSource('https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+          hls.loadSource('https://600e-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, function() {
             video.play();
           });
         }
+        
         else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = 'https://b402-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+          video.src = 'https://600e-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
           video.addEventListener('loadedmetadata', function() {
             video.play();
           });
@@ -109,50 +125,51 @@
 
         const roomName = "live";
 
-        const chatSocket = new WebSocket(
-            'wss://'
-            + window.location.host
-            + '/ws/chat/'
-            + roomName
-            + '/'
-        );
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatLog = document.querySelector('#chat-log');
 
-        chatSocket.onopen = function(e) {
+            // WebSocket 연결 설정과 이벤트 핸들러
+            const chatSocket = new WebSocket(
+                'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
+            );
+
+            chatSocket.onopen = function(e) {
+                document.querySelector('#chat-message-submit').onclick = function(e) {
+                    var messageInputDom = document.querySelector('#chat-message-input');
+                    var message = messageInputDom.value;
+                    chatSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                    messageInputDom.value = '';
+                };
+            };
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                chatLog.value += (data.message + '\n');
+                chatLog.scrollTop = chatLog.scrollHeight; // 스크롤을 자동으로 아래쪽으로 이동
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            document.querySelector('#chat-message-input').focus();
+            document.querySelector('#chat-message-input').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#chat-message-submit').click();
+                }
+            };
+
             document.querySelector('#chat-message-submit').onclick = function(e) {
-                var messageInputDom = document.querySelector('#chat-message-input');
-                var message = messageInputDom.value;
+                const messageInputDom = document.querySelector('#chat-message-input');
+                const message = messageInputDom.value;
                 chatSocket.send(JSON.stringify({
                     'message': message
                 }));
-
                 messageInputDom.value = '';
             };
-        };
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
+        });
     </script>
 </body>
 </html>
