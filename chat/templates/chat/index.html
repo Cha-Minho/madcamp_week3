@@ -6,8 +6,8 @@
 </head>
 
 <body>
-    What chat room would you like to enter?<br/>
-    <input id="room-name-input" type="text" size="100"/><br/>
+    생성하실 채팅방 이름을 입력해주세요.
+    <br/><input id="room-name-input" type="text" size="100"/><br/>
     <input id="room-name-submit" type="button" value="Enter"/>
     
     <script>
@@ -20,7 +20,21 @@
 
         document.querySelector('#room-name-submit').onclick = function(e) {
             var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/chat/' + roomName + '/';
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'csrfmiddlewaretoken';
+            input.value = '{{ csrf_token }}';
+            form.appendChild(input);
+            var roomNameInput = document.createElement('input');
+            roomNameInput.type = 'hidden';
+            roomNameInput.name = 'room_name';
+            roomNameInput.value = roomName;
+            form.appendChild(roomNameInput);
+            document.body.appendChild(form);
+            form.submit();
         };
     </script>
 </body>

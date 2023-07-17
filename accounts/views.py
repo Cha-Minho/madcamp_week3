@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 import json
 from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from .forms import SignUpForm, LoginForm
-from .models import User
+from .models import User, Broadcast
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import StreamingHttpResponse, JsonResponse
@@ -12,6 +12,7 @@ import ffmpeg
 import os 
 from django.conf import settings
 from datetime import datetime
+from django.urls import reverse
 
 @csrf_exempt
 def signup(request):
@@ -81,3 +82,15 @@ def proxy_view(request, path=''):
 
     return response
 
+@csrf_exempt
+def replay(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        video = request.FILES.get('video')
+        
+        if title and video:  # 제목과 비디오가 모두 제공된 경우만 객체를 생성
+            Broadcast.objects.create(title=title, video=video)
+            return HttpResponseRedirect(reverse('replay'))  # POST 요청 이후에 GET 요청으로 리디렉션
+    
+    broadcasts = Broadcast.objects.all()
+    return render(request, 'replay.html', {'broadcasts': broadcasts})

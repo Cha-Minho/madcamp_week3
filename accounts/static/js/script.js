@@ -33,4 +33,30 @@ $(document).ready(function() {
       console.log('세션 데이터 가져오기 실패:', error);
     }
   });
+
+  $("#community").on("click", function() {
+    // 새로운 채팅방 생성 또는 기존 채팅방 입장 선택 다이얼로그 표시
+    Swal.fire({
+      title: "커뮤니티 입장",
+      text: "원하시는 버튼을 클릭하세요.",
+      icon: "question",
+      showCloseButton: true,
+      showCancelButton: true,
+      confirmButtonText: "새로운 채팅방 생성",
+      cancelButtonText: "기존 채팅방 입장",
+      allowOutsideClick: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 새로운 채팅방 생성 페이지로 이동 (페이지 주소에 따라 변경)
+        window.location.href = "/chat/";
+      } 
+      else if (result.dismiss === Swal.DismissReason.cancel){
+        window.location.href = "/chat_list/";
+      }
+      else {
+        // 기존 채팅방 리스트 페이지로 이동 (페이지 주소에 따라 변경)
+        
+      }
+    });
+  });
 });

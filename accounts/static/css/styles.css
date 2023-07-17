@@ -1,106 +1,120 @@
-/* styles.css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f1f1f1;
+}
 
-/* Reset CSS */
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    vertical-align: baseline;
-    background: transparent;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    line-height: 1;
-    color: #333;
-  }
-  
-  /* Header */
-  .header {
-    background-color: #f1f1f1;
-    padding: 10px;
-  }
-  
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logo {
-    font-weight: bold;
-    font-size: 24px;
-  }
-  
-  .menu ul {
-    list-style: none;
-    display: flex;
-  }
-  
-  .menu li {
-    margin-right: 10px;
-  }
-  
-  .menu a {
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .auth-buttons a {
-    margin-left: 10px;
-    padding: 5px 10px;
-    background-color: #333;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-  }
-  
-  /* Main Content */
-  .main-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .hero-section {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .hero-section h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-  
-  .hero-section p {
-    font-size: 16px;
-    color: #777;
-  }
-  
-  .featured-section {
-    margin-bottom: 40px;
-  }
-  
-  .featured-section h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .community-section {
-    margin-bottom: 40px;
-  }
-  
-  .community-section h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  /* Footer */
-  .footer {
-    text-align: center;
-    background-color: #f1f1f1;
-    padding: 10px;
-  }
-  
+/* 헤더 스타일 */
+.header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
+
+/* 네비게이션 바 스타일 */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 로고 스타일 */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* 메뉴 스타일 */
+.menu ul {
+  list-style: none;
+  display: flex;
+}
+
+.menu li {
+  margin: 0 10px;
+}
+
+.menu a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+/* 로그인/회원가입/로그아웃 버튼 스타일 */
+.auth-buttons a {
+  color: #fff;
+  margin: 0 5px;
+  text-decoration: none;
+  padding: 5px 10px;
+  border: 1px solid #fff;
+  border-radius: 5px;
+}
+
+/* 히어로 섹션 스타일 */
+.hero-section {
+  padding: 50px 0;
+  background-color: #fff;
+}
+
+.hero-section h1 {
+  font-size: 36px;
+}
+
+/* 실시간 생방송 섹션 스타일 */
+.featured-section {
+  padding: 30px 0;
+  background-color: #f9f9f9;
+}
+
+.featured-section h2 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 동영상 컨테이너 스타일 */
+#video-container {
+  display: inline-block; /* 왼쪽 정렬을 위해 변경 */
+  vertical-align: top; /* 왼쪽 상단 정렬 추가 */
+}
+
+/* 동영상 스타일 */
+#video {
+  max-width: 100%;
+  margin: 0 auto; /* 가로 중앙 정렬 추가 */
+}
+
+/* 커뮤니티 섹션 스타일 */
+.community-section {
+  padding: 30px 0;
+  background-color: #fff;
+}
+
+.community-section h2 {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 푸터 스타일 */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+/* 링크 스타일 */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AnonymousUser
+from django.utils import timezone
 
 # Create your models here.
 
@@ -64,3 +65,13 @@ class CustomAnonymousUser(AnonymousUser):
     pass
 
 AnonymousUser = CustomAnonymousUser
+
+
+class Broadcast(models.Model):
+    name = models.CharField(max_length=200)
+    video = models.FileField(upload_to='broadcasts/')
+    uploaded_at = models.DateTimeField(default=timezone.now)
+    title = models.CharField(max_length=200, null=True)
+    def __str__(self):
+        return self.name
+    

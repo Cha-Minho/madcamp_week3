@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from channels.exceptions import InvalidChannelLayerError
 from channels.db import database_sync_to_async
 from .models import Donation
+import time
 
 # 비동기식
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -51,62 +52,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': message
         }))
 
-# 동기식
-'''
-import json
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
-
-
-class ChatConsumer(WebsocketConsumer):
-
-    def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
-
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name
-        )
-
-        self.accept()
-
-    def disconnect(self, close_code):
-        # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    # Receive message from WebSocket
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message
-            }
-        )
-
-    # Receive message from room group
-    def chat_message(self, event):
-        message = event['message']
-
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
-'''
 
 class DonationConsumer(AsyncJsonWebsocketConsumer):
-
+    drawing_rights = {}
     async def connect(self):
         self.room_group_name = 'donations'
+        self.drawing_rights[self.scope["session"]["username"]] = [0, time.time()]
         
         # Join room group
         await self.channel_layer.group_add(
@@ -118,6 +69,9 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
+        username = self.scope["session"]["username"]
+        if username in self.drawing_rights:
+            del self.drawing_rights[username]  # new
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -125,36 +79,92 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        print(text_data)
         text_data_json = json.loads(text_data)
-        message = text_data_json.get('message', '')
-        donation_amount = text_data_json.get('amount', '0')
-        donation_message = text_data_json.get('dM', '')
+        message_type = text_data_json.get('type')
+        if message_type == 'donation':
+            username = self.scope["session"]["username"]
+            donation_amount = text_data_json.get('amount', '0')
+            donation_message = text_data_json.get('dM', '')
 
-        # Get username from the session
-        username = self.scope["session"]["username"]
+            if int(donation_amount) > 0:
+                # Create a new donation object
+                donation = Donation(donor=username, amount=donation_amount)
+                # Save the donation object in the database
+                await database_sync_to_async(donation.save)()
+                token = self.drawing_rights[username][0]
+                # Grant drawing rights
+                self.drawing_rights[username] = [token + int(donation_amount) // 1000, time.time()]  # new
 
-        if int(donation_amount) > 0:
-            # Create a new donation object
-            donation = Donation(donor=username, amount=donation_amount)
-            # Save the donation object in the database
-            await database_sync_to_async(donation.save)()
+                # Send message to room group
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'donation_message',
+                        'message': f'{username}님 {int(donation_amount)//1000} 누들 후원 감사합니다! <br> {donation_message}',
+                    }
+                )
 
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'donation_message',
-                    'message': f'{username}님 {int(donation_amount)//100} 누들 후원 감사합니다! <br> {donation_message}',
-                }
-            )
+        elif message_type == 'draw':
+            username = self.scope["session"]["username"]
+            if self.drawing_rights[username][0] > 0:
+                time_cha = time.time() - self.drawing_rights[username][1]
+                if  time_cha > 1:
+                    self.drawing_rights[username][0] -= time_cha // 1
+                    self.drawing_rights[username][1] = time.time()
+                    print("draw", self.drawing_rights[username][0])
+                # else:
+                #     self.drawing_rights[username][0] = 0
+                #     self.drawing_rights[username][1] = time.time()
+                x = text_data_json.get('x')
+                y = text_data_json.get('y')
+                radius = text_data_json.get('radius')
+                color = text_data_json.get('color')
+                if self.drawing_rights[username][0] <= 0:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'draw',
+                            'x': x,
+                            'y': y,
+                            'radius': radius,
+                            'color': color,
+                            'done': "true"
+                        }
+                    )
+                else:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'draw',
+                            'x': x,
+                            'y': y,
+                            'radius': radius,
+                            'color': color,
+                            'done' : "false",
+                        }
+                    )
 
 
     # Receive message from room group
     async def donation_message(self, event):
         message = event['message']
-
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({
+            'type': "donation",
             'message': message
+        }))
+
+    async def draw(self, event):
+        x = event['x']
+        y = event['y']
+        radius = event['radius']
+        color = event['color']
+        done = event['done']
+
+        await self.send(text_data=json.dumps({
+            'type': "draw",
+            'x': x,
+            'y': y,
+            'radius': radius,
+            'color': color,
+            'done' : done,
         }))
