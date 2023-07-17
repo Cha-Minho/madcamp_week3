@@ -4,6 +4,7 @@
     <title>Broadcast Replays</title>
 </head>
 <body>
+    <ul><a href="{% url 'home' %}">홈</a></ul>
     <h2>Upload a new replay</h2>
     <form method="post" action="/replay/" enctype="multipart/form-data">
         {% csrf_token %}

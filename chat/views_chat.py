@@ -3,6 +3,8 @@ from django.utils.safestring import mark_safe
 import json
 from .models import ChatRoom
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import chat_dict_module
 
 # Create your views here.
 def index(request):
@@ -12,6 +14,7 @@ def index(request):
 def room(request, room_name):
     if request.method == 'POST':
         room_name = request.POST.get('room_name', '').strip()
+        chat_dict_module.chatDict[room_name] = 0
         if room_name:
             chat_room = ChatRoom.objects.create(name=room_name, url=f'/chat/{room_name}/')
             chat_room.save()
@@ -24,6 +27,7 @@ def room(request, room_name):
 def create_chat_room(request):
     if request.method == 'POST':
         room_name = request.POST.get('room_name', '').strip()
+        chat_dict_module.chatDict[room_name] = 0
         if room_name:
             chat_room = ChatRoom.objects.create(name=room_name, url=f'/chat/{room_name}/')
             chat_room.save()
@@ -31,5 +35,6 @@ def create_chat_room(request):
     return render(request, 'chat/index.html')
 
 def chat_list(request):
-    chat_rooms = ChatRoom.objects.all()
-    return render(request, 'chat/chat_list.html', {'chat_rooms': chat_rooms})
+    chat_rooms = chat_dict_module.chatDict.items()  # chatDict의 변수명을 chat_rooms로 변경
+    print(chat_rooms)
+    return render(request, 'chat/chat_list.html', {'chat_rooms': chat_rooms})  # 변수명 chat_rooms로 수정

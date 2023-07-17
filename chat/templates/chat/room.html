@@ -11,17 +11,16 @@
     {{ room_name|json_script:"room-name" }}
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
         document.addEventListener('DOMContentLoaded', function() {
             const chatLog = document.querySelector('#chat-log');
-
+            console.log("ASDfasdfasnfkasfkansfasdfme!!!!!!!!!!!!!!!!!!!!!!")
             // WebSocket 연결 설정과 이벤트 핸들러
             const chatSocket = new WebSocket(
                 'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
             );
 
             chatSocket.onopen = function(e) {
-                chatLog.value += "커뮤니티에 입장하였습니다.\n";
+                chatLog.value += roomName+"에 입장하였습니다.\n";
                 document.querySelector('#chat-message-submit').onclick = function(e) {
                     var messageInputDom = document.querySelector('#chat-message-input');
                     var message = messageInputDom.value;

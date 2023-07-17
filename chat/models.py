@@ -9,3 +9,6 @@ class Donation(models.Model):
 class ChatRoom(models.Model):
     name = models.CharField(max_length=100, unique=True)
     url = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name

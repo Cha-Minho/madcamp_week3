@@ -7,8 +7,12 @@
 <body>
     <h1>채팅방 목록</h1>
     <ul>
-        {% for chat_room in chat_rooms %}
-            <li><a href="{{ chat_room.url }}">{{ chat_room.name }}</a></li>
+        {% for chat_room, participant_count in chat_rooms %}
+            <li>
+                <a href="../chat/{{ chat_room }}/">{{ chat_room }}</a>
+                "{{chat_room.name}}"
+                (참여자 수: {% if participant_count %}{{ participant_count }}{% else %}0{% endif %})
+            </li>
         {% endfor %}
     </ul>
 </body>
