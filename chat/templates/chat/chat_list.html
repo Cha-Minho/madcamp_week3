@@ -10,7 +10,6 @@
         {% for chat_room, participant_count in chat_rooms %}
             <li>
                 <a href="../chat/{{ chat_room }}/">{{ chat_room }}</a>
-                "{{chat_room.name}}"
                 (참여자 수: {% if participant_count %}{{ participant_count }}{% else %}0{% endif %})
             </li>
         {% endfor %}

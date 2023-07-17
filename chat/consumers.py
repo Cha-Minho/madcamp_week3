@@ -11,9 +11,9 @@ viewer_cnt = 0
 # 비동기식
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print("heelloo")
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        chat_dict_module.chatDict[self.room_name] += 1
+        if self.room_name != "live":
+            chat_dict_module.chatDict[self.room_name] += 1
         self.room_group_name = 'chat_%s' % self.room_name
 
         # Join room group
@@ -25,11 +25,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        chat_dict_module.chatDict[self.room_name] -= 1
-        if chat_dict_module.chatDict[self.room_name] == 0:
-            print("zero !!!!!!")
-            await self.delete_room_if_empty(self.room_name)
-            del chat_dict_module.chatDict[self.room_name]
+        if self.room_name != "live":
+            chat_dict_module.chatDict[self.room_name] -= 1
+            if chat_dict_module.chatDict[self.room_name] == 0:
+                await self.delete_room_if_empty(self.room_name)
+                del chat_dict_module.chatDict[self.room_name]
 
 
         await self.channel_layer.group_discard(
