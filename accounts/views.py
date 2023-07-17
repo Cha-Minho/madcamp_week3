@@ -9,6 +9,9 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.http import StreamingHttpResponse, JsonResponse
 import requests
 import ffmpeg
+import os 
+from django.conf import settings
+from datetime import datetime
 
 @csrf_exempt
 def signup(request):
@@ -66,20 +69,6 @@ def get_session_data(request):
 
     return JsonResponse(data)
 
-def stream_video(request):
-    video_url = "http://172.20.10.2/stream/hls/live.m3u8"
-    print(video_url, "실행은 됨")
-    def generate():
-        response = requests.get(video_url, stream=True)
-
-        for chunk in response.iter_content(chunk_size=512):
-            if chunk:
-                yield chunk
-
-    response = StreamingHttpResponse(generate(), content_type='application/x-mpegURL')
-    print("response도 함", response)
-    return response
-
 def live(request):
     return render(request, 'live.html')
 
@@ -92,14 +81,3 @@ def proxy_view(request, path=''):
 
     return response
 
-
-def capture_frame(video_url, image_path):
-    try:
-        (
-            ffmpeg
-            .input(video_url, ss=0)
-            .output(image_path, vframes=1)
-            .run(capture_stdout=True, capture_stderr=True)
-        )
-    except ffmpeg.Error as e:
-        print(f'ffmpeg error: {e.stderr.decode()}')

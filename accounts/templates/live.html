@@ -70,10 +70,15 @@
         var donationMsg = document.getElementById('donationMsg');
         var donateBtn = document.getElementById('donateBtn');
 
-        // Create WebSocket connection.
-        var socket = new WebSocket('wss://a5e8-192-249-19-234.ngrok-free.app/ws/donations/');
+        function speakMessage(message) {
+            var msg = new SpeechSynthesisUtterance(message);
+            msg.lang = 'ko-KR'; // 언어 설정 (한국어)
+            window.speechSynthesis.speak(msg);
+        }
 
-        // Connection opened
+        // Create WebSocket connection.
+        var socket = new WebSocket('wss://7414-192-249-19-234.ngrok-free.app/ws/donations/');
+
         // Connection opened
         socket.addEventListener('open', function (event) {
             socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
@@ -81,27 +86,34 @@
 
         
         var audio = new Audio("/static/src/donation.mp3")
+        audio.volume = 0.7;
         // Listen for messages
         socket.addEventListener('message', function (event) {
           var data = JSON.parse(event.data);
           var message = data.message;
           if(message) {
+            audio.play();
             donationMsg.innerHTML = message;
             donationMsg.style.display = 'block';
             setTimeout(function() {
               donationMsg.style.display = 'none';
             }, 5000);
-            audio.play();
+            setTimeout(function() {
+                donationMsg.style.display = 'none';
+                speakMessage(message);
+            }, 3500);
           }
         });
         
         donateBtn.addEventListener('click', function() {
-          var donationAmount = prompt("Please enter your donation amount:");
+          var donationAmount = prompt("얼마를 후원하시겠습니까?(최소 단위: 100원):");
           if(donationAmount) {
+            var donationMessage = prompt("후원 메세지를 입력해주세요.:");
             socket.send(JSON.stringify({
               type: 'donation',
               message: 'A donation has been made.', // 이 부분 추가
-              amount: donationAmount
+              amount: donationAmount,
+              dM: donationMessage,
             }));
           }
         });
@@ -109,7 +121,7 @@
 
         if(Hls.isSupported()) {
           var hls = new Hls();
-          hls.loadSource('https://600e-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+          hls.loadSource('https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, function() {
             video.play();
@@ -117,7 +129,7 @@
         }
 
         else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = 'https://600e-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+          video.src = 'https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
           video.addEventListener('loadedmetadata', function() {
             video.play();
           });

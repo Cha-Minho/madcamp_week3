@@ -129,6 +129,7 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json.get('message', '')
         donation_amount = text_data_json.get('amount', '0')
+        donation_message = text_data_json.get('dM', '')
 
         # Get username from the session
         username = self.scope["session"]["username"]
@@ -144,7 +145,7 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'donation_message',
-                    'message': f'{username}님 {int(donation_amount)//100} 누들 후원 감사합니다!',
+                    'message': f'{username}님 {int(donation_amount)//100} 누들 후원 감사합니다! <br> {donation_message}',
                 }
             )
 

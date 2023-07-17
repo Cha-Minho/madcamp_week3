@@ -6,13 +6,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>방송 플랫폼</title>
+  <title>HOroROK</title>
   <link rel="stylesheet" href="./static/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .featured-section {
+      display: flex;
+      justify-content: space-between;
+    }
+    #video-container {
+      width: 100%;  /* 비디오 컨테이너 너비를 50%로 설정 */
+      margin: auto;  /* 비디오 컨테이너를 중앙에 배치 */
+    }
+    .featured-items {
+      width: 80%;  /* 이 영역의 크기를 원하는 대로 조정하세요 */
+    }
+    #video {
+      width: 100%;  /* 비디오 요소의 너비를 컨테이너의 100%로 설정 */
+      height: auto;  /* 비디오 요소의 높이를 원본 비디오의 비율에 맞게 설정 */
+    }
+  </style>
 </head>
 
 <body>
-  <<header class="header">
+  <header class="header">
     <nav class="navbar">
       <div class="logo">
         로고
@@ -38,7 +56,7 @@
 
   <main class="main-content">
     <section class="hero-section">
-      <h1>방송 플랫폼에 오신 것을 환영합니다</h1>
+      <h1>호로록에 오신 것을 환영합니다</h1>
       <p>다양한 라이브 방송과 동영상을 즐겨보세요.</p>
     </section>
 
@@ -46,6 +64,9 @@
       <h2>주요 컨텐츠</h2>
       <div class="featured-items">
         <!-- 주요 컨텐츠 아이템들 -->
+        <div id="video-container">
+          <video id="video" controls muted></video>
+        </div>
       </div>
     </section>
 
@@ -58,9 +79,29 @@
   </main>>
 
   <footer class="footer">
-    <p>방송 플랫폼 &copy; 2023. All rights reserved.</p>
+    <p>HOroROK &copy; 2023. All rights reserved.</p>
   </footer>
   <script src="./static/js/script.js"></script>
+  <script>
+    var video = document.getElementById('video');
+    if(Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource('https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play();
+      });
+    }
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = 'https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+      video.addEventListener('loadedmetadata', function() {
+        video.play();
+      });
+    }
+    video.addEventListener('click', function() {
+        window.location.href = "{% url 'live' %}"; // 여기에 실제 live.html 파일의 경로를 적어주세요
+    });
+  </script>
 </body>
 
 </html>
