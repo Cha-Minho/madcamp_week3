@@ -150,7 +150,6 @@
         socket.addEventListener('message', function (event) {
           var data = JSON.parse(event.data);
           var message = data.message;
-          console.log(message);
           if(data.type == 'donation') {
             audio.play();
             donationMsg.innerHTML = message;

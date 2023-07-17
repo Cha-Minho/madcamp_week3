@@ -89,8 +89,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
         await self.receive(json_data)
 
     async def disconnect(self, close_code):
-        # Leave room group
-        print("disconnectig")
         global viewer_cnt
         viewer_cnt -= 1
         username = self.scope["session"]["username"]
@@ -138,7 +136,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
                 if  time_cha > 1:
                     self.drawing_rights[username][0] -= time_cha // 1
                     self.drawing_rights[username][1] = time.time()
-                    print("draw", self.drawing_rights[username][0])
                 # else:
                 #     self.drawing_rights[username][0] = 0
                 #     self.drawing_rights[username][1] = time.time()

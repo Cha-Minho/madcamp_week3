@@ -13,7 +13,6 @@
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
         document.addEventListener('DOMContentLoaded', function() {
             const chatLog = document.querySelector('#chat-log');
-            console.log("ASDfasdfasnfkasfkansfasdfme!!!!!!!!!!!!!!!!!!!!!!")
             // WebSocket 연결 설정과 이벤트 핸들러
             const chatSocket = new WebSocket(
                 'wss://' + window.location.host + '/ws/chat/' + roomName + '/'

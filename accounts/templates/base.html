@@ -10,28 +10,33 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .big-image {
-    width: 100%;
-    height: auto;
+      width: 100%;
+      height: auto;
     }
+
     .small-image {
       width: 80%;
       height: auto;
     }
+
     .featured-section {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
     }
+
     .featured-header {
       text-align: center;
     }
+
     .featured-items {
       display: flex;
       justify-content: space-between;
       position: relative;
       width: 80%;
     }
+
     .img-container {
       flex: 1;
       display: flex;
@@ -40,28 +45,34 @@
       position: relative;
       z-index: 1;
     }
+
     .img-container:nth-child(1) {
       z-index: 2;
       margin-right: -100px;  /* You can adjust this to overlap more or less */
     }
+
     .img-container:nth-child(2) {
       z-index: 3;
       margin-left: -100px;
       margin-right: -100px;
     }
+
     .img-container:nth-child(4) {
       z-index: 3;
       margin-left: -100px;
       margin-right: -100px;
     }
+
     .img-container:nth-child(5) {
       z-index: 2;
       margin-left: -100px;
     }
+
     .img-container img {
       max-width: 100%;
       height: auto;
     }
+
     #video-container {
       position: relative;
       z-index: 4;
@@ -69,12 +80,55 @@
       height: 281.25px;
       margin: 0 -50px;
     }
+
     #video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+    }
+
+    .recommended-section {
+      background-color: #e3e3e3; /* 진한 색으로 변경 */
+      padding: 30px 0;
+      text-align: center; /* 추천 채널 섹션의 내용 가운데 정렬 */
+    }
+
+    .recommended-header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .recommended-items {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    .channel-container {
+      flex: 0 0 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .channel-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .channel-name {
+      font-size: 18px;
     }
   </style>
 </head>
@@ -106,37 +160,51 @@
       </div>
     </nav>
   </header>
+    <div class="flex-container" style="display: flex;">
+      <section class="recommended-section" style="width: 15%; padding: 200px 0;">
+        <h2 class="recommended-header">추천 채널</h2>
+        <div class="recommended-items">
+          <div class="channel-container">
+            <img class="channel-image" src="accounts/static/src/profileImage.jpg" alt="Channel 1" />
+            <p class="channel-name">마이노 차</p>
+          </div>
+          <!-- 추가 채널 목록을 여기에 추가 -->
+        </div>
+      </section>
+     
 
-  <main class="main-content">
-    <section class="hero-section">
-      <h1>호로록에 오신 것을 환영합니다</h1>
-      <p>다양한 라이브 방송과 동영상을 즐겨보세요.</p>
-    </section>
+      <div class="main-container" style="width: 85%;" >
+        <section class="hero-section" style="text-align: center; padding: 5px 0;"> <!-- 세로 길이를 조절하기 위해 padding 값을 추가 -->
+          <h1>호로록에 오신 것을 환영합니다</h1>
+          <p>다양한 라이브 방송과 동영상을 즐겨보세요.</p>
+        </section>
 
-    <section class="featured-section">
-      <h2 class="featured-header">실시간 생방송</h2>
-      <div class="featured-items">
-        <div class="img-container">
-          <img class="small-image" src="accounts/static/thumbnail/dummy_1.png" alt="Image 1" />
-        </div>
-        <div class="img-container">
-          <img class="big-image" src="accounts/static/thumbnail/dummy_2.png" alt="Image 2" />
-        </div>
-        <div id="video-container">
-          <video id="video" controls muted></video>
-        </div>
-        <div class="img-container">
-          <img class="big-image" src="accounts/static/thumbnail/dummy_3.png" alt="Image 3" />
-        </div>
-        <div class="img-container">
-          <img class="small-image" src="accounts/static/thumbnail/dummy_4.png" alt="Image 4" />
-        </div>
+        <section class="featured-section" style="width: 100%; padding: 50px 0;">
+          <h2 class="featured-header">실시간 생방송</h2>
+          <div class="featured-items">
+            <div class="img-container">
+              <img class="small-image" src="accounts/static/thumbnail/dummy_1.png" alt="Image 1" />
+            </div>
+            <div class="img-container">
+              <img class="big-image" src="accounts/static/thumbnail/dummy_2.png" alt="Image 2" />
+            </div>
+            <div id="video-container">
+              <video id="video" controls muted></video>
+            </div>
+            <div class="img-container">
+              <img class="big-image" src="accounts/static/thumbnail/dummy_3.png" alt="Image 3" />
+            </div>
+            <div class="img-container">
+              <img class="small-image" src="accounts/static/thumbnail/dummy_4.png" alt="Image 4" />
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
+    </div> 
 
-  </main>>
+  </main>
 
-  <footer class="footer">
+  <footer class="footer" style="padding: 1px 0; position: fixed; bottom: 0; left: 0; width: 100%;">
     <p>상호명: HOroROK Interactive, Inc</p>
     <p>대표자: 차민호, 김성록</p>
     <p>주소: 대전광역시 유성구 대학로 291 (우)34141 </p>
@@ -146,6 +214,7 @@
   <script src="./static/js/script.js"></script>
   <script>
     var video = document.getElementById('video');
+    var myprofile = document.getElementsByClassName('channel-image');
     if(Hls.isSupported()) {
       var hls = new Hls();
       hls.loadSource('https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
@@ -163,6 +232,12 @@
     video.addEventListener('click', function() {
         window.location.href = "{% url 'live' %}"; // 여기에 실제 live.html 파일의 경로를 적어주세요
     });
+    for(let i=0; i < myprofile.length; i++){
+        myprofile[i].addEventListener('click', function() {
+            window.location.href = "{% url 'live' %}"; // 여기에 실제 live.html 파일의 경로를 적어주세요
+        });
+    }
+    
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </body>
