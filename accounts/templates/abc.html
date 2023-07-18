@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Replays</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        button {
+            display: inline-block;
+            background-color: #ff7f00; /* 기본 배경색 */
+            background-image: linear-gradient(45deg, #ff7f00, #ffbb00); /* 그라디언트 배경색 */
+            border: none; /* 테두리 제거 */
+            color: #ffffff; /* 텍스트 색상 */
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 10px; /* 둥근 모서리 */
+            padding: 10px 24px;
+            width: 200px;
+            box-shadow: 0 5px #999; /* 그림자 효과 */
+            margin-top: 20px !important;
+        }
+
+        button:hover { /* 마우스 호버 시의 효과 */
+            background-image: linear-gradient(45deg, #ffbb00, #ff7f00); /* 그라디언트 배경색 방향 변경 */
+            box-shadow: 0 5px #666; /* 그림자 색상 변경 */
+            transform: translateY(-2px); /* 약간 위로 이동 */
+        }
+
+        button:active { /* 클릭 시의 효과 */
+            box-shadow: 0 2px #666; /* 그림자 크기 축소 */
+            transform: translateY(2px); /* 원래 위치로 복귀 */
+        }
+        .replay {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            border-radius: 10px;
+            padding: 0px 20px 20px 20px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .replay video {
+            margin-right: 20px;
+        }
+        .replay .small-text {
+            font-size: 0.8em;
+        }
+        .center {
+            text-align: center;
+        }
+        #uploadForm {
+            display: none;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 10px;
+        }
+        #uploadForm div {
+            margin-bottom: 10px;
+        }
+
+        #uploadForm label {
+            display: block;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        #uploadForm input[type="text"], 
+        #uploadForm input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box; /* padding과 border가 width에 포함되도록 설정 */
+        }
+
+        #uploadForm input[type="submit"] {
+            display: block;
+            background-color: #ff7f00; /* 기본 배경색 */
+            background-image: linear-gradient(45deg, #ff7f00, #ffbb00); /* 그라디언트 배경색 */
+            border: none; /* 테두리 제거 */
+            color: #ffffff; /* 텍스트 색상 */
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 10px; /* 둥근 모서리 */
+            padding: 10px 24px;
+            width: 200px;
+            box-shadow: 0 5px #999; /* 그림자 효과 */
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #uploadForm input[type="submit"]:hover { /* 마우스 호버 시의 효과 */
+            background-image: linear-gradient(45deg, #ffbb00, #ff7f00); /* 그라디언트 배경색 방향 변경 */
+            box-shadow: 0 5px #666; /* 그림자 색상 변경 */
+            transform: translateY(-2px); /* 약간 위로 이동 */
+        }
+
+        #uploadForm input[type="submit"]:active { /* 클릭 시의 효과 */
+            box-shadow: 0 2px #666; /* 그림자 크기 축소 */
+            transform: translateY(2px); /* 원래 위치로 복귀 */
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                로고
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="{% url 'home' %}">홈</a></li>
+                    <li><a href="#">ㅣ</a></li>
+                    <li><a href="{% url 'live' %}">라이브</a></li>
+                    <li><a href="#">ㅣ</a></li>
+                    <li><a href="{% url 'replay' %}">동영상</a></li>
+                    <li><a href="#">ㅣ</a></li>
+                    <li><a id="community">커뮤니티</a></li>
+                </ul>
+            </div>
+            <div class="auth-buttons">
+                <a id="loginButton" href="{% url 'login' %}" >로그인</a>
+                <a id="signupButton" href="{% url 'signup' %}" >회원가입</a>
+                <div id="welcomeMessage" style="display: none;"></div>
+                <a id="logoutButton" href="{% url 'logout' %}" >로그아웃</a>
+            </div>
+        </nav>
+    </header>
+
+    <button id="uploadButton" class="center" style="display:block;margin:auto;">Upload a new replay</button>
+    
+    <form id="uploadForm" method="post" action="/replay/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div>
+            <label for="video">Video:</label>
+            <input type="file" id="video" name="video" accept="video/*" required>
+        </div>
+        <div>
+            <input type="submit" value="Upload">
+        </div>
+    </form>
+
+    <h2 class="center">Broadcast Replays</h2>
+
+    {% for broadcast in broadcasts %}
+    <div class="replay">
+        <video width="320" height="240" controls>
+            <source src="{{ broadcast.video.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div>
+            <h3>{{ broadcast.title }}</h3>
+            <h4>{{ broadcast.name }}</h4>
+            <p class="small-text">Uploaded on {{ broadcast.uploaded_at|date:"Y년 m월 d일" }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p>No replays available.</p>
+    {% endfor %}
+
+    <script src="../static/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+    <script>
+        $('#uploadButton').click(function(){
+            $('#uploadForm').slideToggle(); // 클릭할 때마다 폼이 나타났다 사라지게 함
+        });
+    </script>
+</body>
+</html>

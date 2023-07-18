@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOroROK</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Live Stream Player & Chat Room</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         #draw-area {
           position: absolute;
-          top: 20px;
+          top: 100px;
           left: 0;
-          width: 98%;  /* 비디오 요소의 너비에 맞게 설정 */
-          height: 90%;  /* 비디오 요소의 높이에 맞게 설정 */
+          width: 80%;  /* 비디오 요소의 너비에 맞게 설정 */
+          height: 85%;  /* 비디오 요소의 높이에 맞게 설정 */
           z-index: 2;  /* 비디오 요소 위에 위치하도록 설정 */
         }
         #main-container {
+            margin-top: 60px;
             display: flex;
             justify-content: space-around;
-            height: 100vh;
+            height: 90vh;
         }
         #video-container {
             flex: 0.8;
@@ -35,7 +42,7 @@
           /* display: none; */
         }
         #chat-log {
-            height: 90%;
+            height: 85%;
             width: 90%;
         }
         #chat-message-input {
@@ -46,8 +53,24 @@
         }
         @keyframes fade-in-out {
           0% { opacity: 0; }
-          50% { opacity: 1; }
+          20% { opacity: 1; }
           100% { opacity: 0; }
+        }
+        #donation-section {
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 30px;
+            width: 400px; /* Adjust this if you want more space between elements */
+        }
+        #viewerCountSection {
+            display: flex;
+            align-items: center;
+            margin-left: 50px; /* distance from the donate button */
+        }
+        #viewerCount {
+            margin-left: 10px;
         }
         #donationMsg {
           position: absolute;
@@ -58,22 +81,54 @@
           background: rgba(0, 0, 0, 0.5);
           padding: 10px;
           display: none;
-          animation: fade-in-out 5s; 
+          animation: fade-in-out 10s; 
           z-index: 3;
         }
     </style>
 </head>
 <body>
-    <div style="width:100%; display:flex; justify-content:flex-start;">
-      <a href="{% url 'home' %}">홈</a>
-    </div>
+  <header class="header">
+    <nav class="navbar">
+      <div class="logo">
+        로고
+      </div>
+      <div class="menu">
+        <ul>
+          <li><a href="{% url 'home' %}">홈</a></li>
+          <li><a href="#">ㅣ</a></li>
+          <li><a href="{% url 'live' %}">라이브</a></li>
+          <li><a href="#">ㅣ</a></li>
+          <li><a href="{% url 'replay' %}">동영상</a></li>
+          <li><a href="#">ㅣ</a></li>
+          <li><a id="community">커뮤니티</a></li>
+        </ul>
+      </div>
+      <div class="auth-buttons">
+        <a id="loginButton" href="{% url 'login' %}" >로그인</a>
+        <a id="signupButton" href="{% url 'signup' %}" >회원가입</a>
+        <div id="welcomeMessage" style="display: none;"></div>
+        <a id="logoutButton" href="{% url 'logout' %}" >로그아웃</a>
+      </div>
+      
+      </div>
+    </nav>
+  </header>
     <div id="main-container">
-        <div id="video-container">
-            <video id="video" controls></video>
+      <div id="video-container">
+        <video id="video" controls></video>
+        <div id="donation-section"> <!-- 이 div가 버튼과 viewerCount를 포함합니다 -->
             <button id="donateBtn">Donate</button>
-            <div id="donationMsg"></div>
-            <canvas id="draw-area"></canvas>
+            <div id="viewerCountSection"> <!-- 이 div는 viewerCount와 그에 대한 아이콘을 포함합니다 -->
+                <img src="../static/src/person_icon.png" width="30px" height="30px" alt="Viewer icon" id="viewerIcon"> <!-- viewer 아이콘. 적절한 경로로 수정해야 합니다 -->
+                <div id="viewerCount">0</div>
+            </div>
+            <div id="colorSelector">
+              <input type="color" id="colorPicker">
+            </div>
         </div>
+        <div id="donationMsg"></div>
+        <canvas id="draw-area"></canvas>
+    </div>
         <div id="chat-container">
             <textarea id="chat-log" cols="10" rows="100" readonly></textarea><br>
             <input id="chat-message-input" type="text" size="10"><br>
@@ -81,7 +136,6 @@
             {{ room_name|json_script:"room-name" }}
         </div>
     </div>
-    <div id = "viewerCount">0</div>
     <script>
         var video = document.getElementById('video');
         var donationMsg = document.getElementById('donationMsg');
@@ -96,7 +150,6 @@
         var viewerCountElement = document.getElementById('viewerCount');
 
         drawArea.addEventListener('mousedown', function(e) {
-          console.log("Im drawing");
           drawing = true;
           socket.send(JSON.stringify({
             type: 'draw',
@@ -104,6 +157,7 @@
             y: e.pageY - drawArea.offsetTop,
             radius: radius,
             color: color,
+            firstPoint: true,
           }));
         });
 
@@ -111,7 +165,6 @@
           // 사용자가 마우스를 움직이면서 그림을 계속 그리고 있는지 확인
           if (drawing) {
             // 마우스 위치에 원을 그림
-            console.log("계쏙 그리는 중");
             // 그림 데이터를 서버에 전송
             socket.send(JSON.stringify({
               type: 'draw',
@@ -119,16 +172,19 @@
               y: e.pageY - drawArea.offsetTop,
               radius: radius,
               color: color,
+              firstPoint: false,
             }));
           }
         });
 
         drawArea.addEventListener('mouseup', function(e) {
           // 사용자가 마우스 클릭을 끝냈음을 나타냄
-          console.log("마우스 뗌");
           drawing = false;
         });
-
+        colorInput = document.getElementById("colorPicker");
+        colorInput.addEventListener('change', function() {
+          color = this.value; // 사용자가 선택한 색상으로 color 변수를 업데이트합니다
+        });
         function speakMessage(message) {
             var msg = new SpeechSynthesisUtterance(message);
             msg.lang = 'ko-KR'; // 언어 설정 (한국어)
@@ -136,7 +192,7 @@
         }
 
         // Create WebSocket connection.
-        var socket = new WebSocket('wss://7414-192-249-19-234.ngrok-free.app/ws/donations/');
+        var socket = new WebSocket('wss://32b5-192-249-19-234.ngrok-free.app/ws/donations/');
 
         // Connection opened
         socket.addEventListener('open', function (event) {
@@ -152,7 +208,7 @@
           var message = data.message;
           if(data.type == 'donation') {
             audio.play();
-            donationMsg.innerHTML = message;
+            donationMsg.innerHTML = message + '<img src="/static/src/donation_image.png" alt = "donation image" style="position: absolute; right: -100; bottom: -100;">' ;
             donationMsg.style.display = 'block';
             setTimeout(function() {
               donationMsg.style.display = 'none';
@@ -163,18 +219,21 @@
             }, 3500);
           }
           else if(data.type === 'draw') {
-            // Draw received drawing data on the canvas
-            console.log(data);
-            if (data.done == "true") {
-              drawContext.clearRect(0, 0, drawContext.canvas.width, drawContext.canvas.height);
-            } else {
-              drawContext.beginPath();
-              drawContext.arc(data.x, data.y, data.radius, 0, Math.PI * 2);
-              drawContext.fillStyle = data.color;
-              drawContext.strokeStyle = data.color;
-              drawContext.fill();
-              drawContext.stroke();
-            }
+              // Draw received drawing data on the canvas
+              if (data.done == "true") {
+                  drawContext.clearRect(0, 0, drawContext.canvas.width, drawContext.canvas.height);
+              } else {
+                  // Check if it's the first point
+                  if (data.firstPoint) {
+                      drawContext.beginPath();
+                      drawContext.moveTo(data.x, data.y);
+                  } else {
+                      drawContext.lineTo(data.x, data.y);
+                      drawContext.strokeStyle = data.color;
+                      drawContext.lineWidth = data.radius*2;
+                      drawContext.stroke();
+                  }
+              }
           }
           if (data.type === 'viewer_update') {
             var viewerCountElement = document.getElementById('viewerCount');
@@ -198,7 +257,7 @@
 
         if(Hls.isSupported()) {
           var hls = new Hls();
-          hls.loadSource('https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+          hls.loadSource('https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, function() {
             video.play();
@@ -206,7 +265,7 @@
         }
 
         else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = 'https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+          video.src = 'https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
           video.addEventListener('loadedmetadata', function() {
             video.play();
           });
@@ -275,5 +334,7 @@
         }
 
     </script>
+    <script src="../static/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>

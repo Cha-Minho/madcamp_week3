@@ -3,59 +3,155 @@
 <head>
     <meta charset="utf-8"/>
     <title>Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .chat-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #chat-log {
+            width: 1400px;
+            height: 500px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow-y: scroll;
+        }
+
+        #chat-message-input {
+            width: 1100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #chat-message-submit {
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        #chat-message-submit:hover {
+            background-color: #0056b3;
+        }
+
+        #online-users {
+            width: 200px;
+            height: 500px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow-y: scroll;
+        }
+    </style>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ room_name|json_script:"room-name" }}
-    <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatLog = document.querySelector('#chat-log');
-            // WebSocket 연결 설정과 이벤트 핸들러
-            const chatSocket = new WebSocket(
-                'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
-            );
+    <div class="chat-container">
+        <h2>채팅방</h2>
+        <div style="display: flex; align-items: center;">
+            <div id="chat-log"></div>
+            <div id="online-users" style="margin-left: 10px;"></div>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+            <input id="chat-message-input" type="text" placeholder="메시지를 입력하세요" style="flex: 1;">
+            <input id="chat-message-submit" type="button" value="전송" style="margin-left: 10px;">
+        </div>
+        
 
-            chatSocket.onopen = function(e) {
-                chatLog.value += roomName+"에 입장하였습니다.\n";
+        {{ room_name|json_script:"room-name" }}
+        <script>
+            const roomName = JSON.parse(document.getElementById('room-name').textContent);
+            document.addEventListener('DOMContentLoaded', function() {
+                const chatLog = document.querySelector('#chat-log');
+                const onlineUsers = document.querySelector('#online-users');
+
+                // WebSocket 연결 설정과 이벤트 핸들러
+                const chatSocket = new WebSocket(
+                    'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
+                );
+
+                chatSocket.onopen = function(e) {
+                    chatLog.innerHTML += `<p>${roomName}에 입장하였습니다.</p>`;
+                    document.querySelector('#chat-message-submit').onclick = function(e) {
+                        const messageInputDom = document.querySelector('#chat-message-input');
+                        const message = messageInputDom.value;
+                        chatSocket.send(JSON.stringify({
+                            'message': message
+                        }));
+                        messageInputDom.value = '';
+                    updateOnlineUsers(data.online_users);
+                    };
+                };
+
+                chatSocket.onclose = function(e) {
+                    console.error('Chat socket closed unexpectedly');
+                    updateOnlineUsers(data.online_users);
+                };
+
+                document.querySelector('#chat-message-input').focus();
+                document.querySelector('#chat-message-input').onkeyup = function(e) {
+                    if (e.keyCode === 13) {  // enter, return
+                        document.querySelector('#chat-message-submit').click();
+                    }
+                };
+
+                chatSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+                    chatLog.innerHTML += `<p>${data.message}</p>`;
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                    updateOnlineUsers(data.online_users);
+                };
+
                 document.querySelector('#chat-message-submit').onclick = function(e) {
-                    var messageInputDom = document.querySelector('#chat-message-input');
-                    var message = messageInputDom.value;
+                    const messageInputDom = document.querySelector('#chat-message-input');
+                    const message = messageInputDom.value;
+                    console.log(message)
                     chatSocket.send(JSON.stringify({
                         'message': message
                     }));
                     messageInputDom.value = '';
+                    updateOnlineUsers(data.online_users);
                 };
-            };
 
-            chatSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                chatLog.value += (data.message + '\n');
-                chatLog.scrollTop = chatLog.scrollHeight; // 스크롤을 자동으로 아래쪽으로 이동
-            };
-
-            chatSocket.onclose = function(e) {
-                console.error('Chat socket closed unexpectedly');
-            };
-
-            document.querySelector('#chat-message-input').focus();
-            document.querySelector('#chat-message-input').onkeyup = function(e) {
-                if (e.keyCode === 13) {  // enter, return
-                    document.querySelector('#chat-message-submit').click();
+                function updateOnlineUsers(onlineUsers) {
+                    const onlineUsersDiv = document.querySelector('#online-users');
+                    onlineUsersDiv.innerHTML = '';
+                    for (const user of onlineUsers) {
+                        const userElement = document.createElement('p');
+                        userElement.textContent = user;
+                        onlineUsersDiv.appendChild(userElement);
+                    }
                 }
-            };
-
-            document.querySelector('#chat-message-submit').onclick = function(e) {
-                const messageInputDom = document.querySelector('#chat-message-input');
-                const message = messageInputDom.value;
-                chatSocket.send(JSON.stringify({
-                    'message': message
-                }));
-                messageInputDom.value = '';
-            };
-        });
-    </script>
+            });
+        </script>
+    </div>
+    
 </body>
 </html>

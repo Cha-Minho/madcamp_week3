@@ -6,14 +6,17 @@ from channels.db import database_sync_to_async
 from .models import Donation, ChatRoom
 import time
 import chat_dict_module
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 viewer_cnt = 0
 # 비동기식
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        username = self.scope["session"]["username"]
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         if self.room_name != "live":
-            chat_dict_module.chatDict[self.room_name] += 1
+            chat_dict_module.chatDict[self.room_name].append(username)
         self.room_group_name = 'chat_%s' % self.room_name
 
         # Join room group
@@ -22,12 +25,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        await self.send_online_users({
+            'online_users': chat_dict_module.chatDict[self.room_name],
+        })
 
     async def disconnect(self, close_code):
         # Leave room group
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
         if self.room_name != "live":
-            chat_dict_module.chatDict[self.room_name] -= 1
-            if chat_dict_module.chatDict[self.room_name] == 0:
+            username = self.scope["session"]["username"]
+            print(chat_dict_module.chatDict)
+            chat_dict_module.chatDict[self.room_name].remove(username)
+            if len(chat_dict_module.chatDict[self.room_name]) == 0:
                 await self.delete_room_if_empty(self.room_name)
                 del chat_dict_module.chatDict[self.room_name]
 
@@ -36,6 +45,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        await self.send_online_users({
+            'online_users': chat_dict_module.chatDict[self.room_name],
+        })
+        await self.update_online_users(self.room_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -67,6 +80,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+    async def send_online_users(self, event):
+        online_users = event['online_users']
+        await self.send(text_data=json.dumps({
+            'type': 'online_users',
+            'online_users': online_users,
+        }))
+
+    async def update_online_users(self, room_name):
+        channel_layer = get_channel_layer()
+        online_users = chat_dict_module.chatDict[room_name]
+        await async_to_sync(channel_layer.group_send)(
+            'chat_{}'.format(room_name),
+            {
+                'type': 'send_online_users',
+                'online_users': online_users,
+            }
+        )
 
 
 class DonationConsumer(AsyncJsonWebsocketConsumer):
@@ -152,6 +183,7 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
                             'y': y,
                             'radius': radius,
                             'color': color,
+                            "firstPoint": text_data_json.get("firstPoint"),
                             'done': "true"
                         }
                     )
@@ -165,6 +197,7 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
                             'radius': radius,
                             'color': color,
                             'done' : "false",
+                            "firstPoint": text_data_json.get("firstPoint")
                         }
                     )
         elif message_type == "update_viewer":

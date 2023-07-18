@@ -14,7 +14,7 @@ def index(request):
 def room(request, room_name):
     if request.method == 'POST':
         room_name = request.POST.get('room_name', '').strip()
-        chat_dict_module.chatDict[room_name] = 0
+        chat_dict_module.chatDict[room_name] = []
         if room_name:
             chat_room = ChatRoom.objects.create(name=room_name, url=f'/chat/{room_name}/')
             chat_room.save()
@@ -27,7 +27,7 @@ def room(request, room_name):
 def create_chat_room(request):
     if request.method == 'POST':
         room_name = request.POST.get('room_name', '').strip()
-        chat_dict_module.chatDict[room_name] = 0
+        chat_dict_module.chatDict[room_name] = []
         if room_name:
             chat_room = ChatRoom.objects.create(name=room_name, url=f'/chat/{room_name}/')
             chat_room.save()

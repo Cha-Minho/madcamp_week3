@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HOroROK</title>
-  <link rel="stylesheet" href="./static/css/styles.css">
+  <link rel="stylesheet" href="../static/css/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
@@ -204,27 +204,27 @@
 
   </main>
 
-  <footer class="footer" style="padding: 1px 0; position: fixed; bottom: 0; left: 0; width: 100%;">
+  <footer class="footer" style="padding: 1px 0; bottom: 0; left: 0; width: 100%;">
     <p>상호명: HOroROK Interactive, Inc</p>
     <p>대표자: 차민호, 김성록</p>
     <p>주소: 대전광역시 유성구 대학로 291 (우)34141 </p>
     <p>호스팅 서비스 제공자: HOroROK Interactive, Inc</p>
     <p>HOroROK &copy; 2023. All rights reserved.</p>
   </footer>
-  <script src="./static/js/script.js"></script>
+  
   <script>
     var video = document.getElementById('video');
     var myprofile = document.getElementsByClassName('channel-image');
     if(Hls.isSupported()) {
       var hls = new Hls();
-      hls.loadSource('https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+      hls.loadSource('https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.play();
       });
     }
     else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = 'https://7414-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+      video.src = 'https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
       video.addEventListener('loadedmetadata', function() {
         video.play();
       });
@@ -239,6 +239,7 @@
     }
     
   </script>
+  <script src="../static/js/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </body>
 

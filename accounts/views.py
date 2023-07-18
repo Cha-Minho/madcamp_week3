@@ -87,10 +87,10 @@ def replay(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         video = request.FILES.get('video')
-        
+        name = request.session['username']
         if title and video:  # 제목과 비디오가 모두 제공된 경우만 객체를 생성
-            Broadcast.objects.create(title=title, video=video)
+            Broadcast.objects.create(title=title, video=video, name = name)
             return HttpResponseRedirect(reverse('replay'))  # POST 요청 이후에 GET 요청으로 리디렉션
     
-    broadcasts = Broadcast.objects.all()
-    return render(request, 'replay.html', {'broadcasts': broadcasts})
+    broadcasts = Broadcast.objects.all().order_by('-id')
+    return render(request, 'abc.html', {'broadcasts': broadcasts})
