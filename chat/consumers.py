@@ -16,8 +16,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = self.scope["session"]["username"]
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         if self.room_name != "live":
-            chat_dict_module.chatDict[self.room_name].append(username)
+            if username not in chat_dict_module.chatDict[self.room_name]:
+                chat_dict_module.chatDict[self.room_name].append(username)
         self.room_group_name = 'chat_%s' % self.room_name
+        print(chat_dict_module.chatDict)
 
         # Join room group
         await self.channel_layer.group_add(
@@ -28,18 +30,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send_online_users({
             'online_users': chat_dict_module.chatDict[self.room_name],
         })
+        await self.update_online_users(self.room_name)
 
     async def disconnect(self, close_code):
         # Leave room group
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         if self.room_name != "live":
             username = self.scope["session"]["username"]
-            print(chat_dict_module.chatDict)
             chat_dict_module.chatDict[self.room_name].remove(username)
+            print(len(chat_dict_module.chatDict[self.room_name]), len(chat_dict_module.chatDict[self.room_name])==0)
             if len(chat_dict_module.chatDict[self.room_name]) == 0:
                 await self.delete_room_if_empty(self.room_name)
                 del chat_dict_module.chatDict[self.room_name]
-
+                self.update_online_users(self.room_name)
+            print(chat_dict_module.chatDict)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -89,9 +93,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def update_online_users(self, room_name):
-        channel_layer = get_channel_layer()
         online_users = chat_dict_module.chatDict[room_name]
-        await async_to_sync(channel_layer.group_send)(
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
             'chat_{}'.format(room_name),
             {
                 'type': 'send_online_users',
@@ -237,4 +241,5 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
             'radius': radius,
             'color': color,
             'done' : done,
+            'firstPoint': event['firstPoint'],
         }))

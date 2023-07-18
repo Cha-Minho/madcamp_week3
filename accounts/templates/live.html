@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="shortcut icon" href="../static/src/KakaoTalk_20230717_122510026.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOroROK</title>
@@ -16,7 +17,7 @@
           left: 0;
           width: 80%;  /* 비디오 요소의 너비에 맞게 설정 */
           height: 85%;  /* 비디오 요소의 높이에 맞게 설정 */
-          z-index: 2;  /* 비디오 요소 위에 위치하도록 설정 */
+          z-index: 4;  /* 비디오 요소 위에 위치하도록 설정 */
         }
         #main-container {
             margin-top: 60px;
@@ -145,7 +146,7 @@
         drawArea.height = drawArea.offsetHeight;
         var drawContext = drawArea.getContext('2d');
         var drawing = false;
-        var color = 'white';
+        var color = 'black';
         var radius = 5;
         var viewerCountElement = document.getElementById('viewerCount');
 
@@ -284,7 +285,6 @@
 
             chatSocket.onopen = function(e) {
               const username = getCookie('username');
-              console.log(username)
               chatLog.value += "채팅창에 입장하였습니다.\n";
               document.querySelector('#chat-message-submit').onclick = function(e) {
                   var messageInputDom = document.querySelector('#chat-message-input');
@@ -300,8 +300,12 @@
 
             chatSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                chatLog.value += (data.message + '\n');
-                chatLog.scrollTop = chatLog.scrollHeight; // 스크롤을 자동으로 아래쪽으로 이동
+                if (data.type === 'online_users') {
+                    // updateOnlineUsers(data.online_users);
+                } else {
+                    chatLog.value += (data.message + '\n');
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                }
             };
 
             chatSocket.onclose = function(e) {

@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="shortcut icon" href="../static/src/KakaoTalk_20230717_122510026.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOroROK</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta charset="utf-8"/>
     <title>Chat Room</title>
     <style>
         body {
+            width: 98.95%;
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            line-height: 1.6;
+            background-color: #f1f1f1;
+            /* height: 100vh; */
         }
 
         .chat-container {
-            display: flex;
+            /* display: flex; */
+            width: 98.95%;
             flex-direction: column;
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            margin-top: 50px;
         }
 
         .chat-container h2 {
@@ -29,7 +38,7 @@
         }
 
         #chat-log {
-            width: 1400px;
+            width: 80%;
             height: 500px;
             padding: 10px;
             border: 1px solid #ddd;
@@ -39,7 +48,7 @@
         }
 
         #chat-message-input {
-            width: 1100px;
+            width: 94%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -61,7 +70,7 @@
         }
 
         #online-users {
-            width: 200px;
+            width: 12.5%;
             height: 500px;
             padding: 10px;
             border: 1px solid #ddd;
@@ -72,6 +81,32 @@
     </style>
 </head>
 <body>
+    <header class="header" style="width: 100%; height: auto;">
+        <nav class="navbar">
+          <div class="logo">
+            로고
+          </div>
+          <div class="menu">
+            <ul>
+              <li><a href="{% url 'home' %}">홈</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a href="{% url 'live' %}">라이브</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a href="{% url 'replay' %}">동영상</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a id="community">커뮤니티</a></li>
+            </ul>
+          </div>
+          <div class="auth-buttons">
+            <a id="loginButton" href="{% url 'login' %}" >로그인</a>
+            <a id="signupButton" href="{% url 'signup' %}" >회원가입</a>
+            <div id="welcomeMessage" style="display: none;"></div>
+            <a id="logoutButton" href="{% url 'logout' %}" >로그아웃</a>
+          </div>
+          
+          </div>
+        </nav>
+    </header>
     <div class="chat-container">
         <h2>채팅방</h2>
         <div style="display: flex; align-items: center;">
@@ -80,7 +115,7 @@
         </div>
         
         <div style="display: flex; align-items: center;">
-            <input id="chat-message-input" type="text" placeholder="메시지를 입력하세요" style="flex: 1;">
+            <input id="chat-message-input" type="text" placeholder="메시지를 입력하세요">
             <input id="chat-message-submit" type="button" value="전송" style="margin-left: 10px;">
         </div>
         
@@ -103,16 +138,15 @@
                         const messageInputDom = document.querySelector('#chat-message-input');
                         const message = messageInputDom.value;
                         chatSocket.send(JSON.stringify({
+                            'type': 'get_online_users',
                             'message': message
                         }));
                         messageInputDom.value = '';
-                    updateOnlineUsers(data.online_users);
                     };
                 };
 
                 chatSocket.onclose = function(e) {
                     console.error('Chat socket closed unexpectedly');
-                    updateOnlineUsers(data.online_users);
                 };
 
                 document.querySelector('#chat-message-input').focus();
@@ -124,9 +158,12 @@
 
                 chatSocket.onmessage = function(e) {
                     const data = JSON.parse(e.data);
-                    chatLog.innerHTML += `<p>${data.message}</p>`;
-                    chatLog.scrollTop = chatLog.scrollHeight;
-                    updateOnlineUsers(data.online_users);
+                    if (data.type === 'online_users') {
+                        updateOnlineUsers(data.online_users);
+                    } else {
+                        chatLog.innerHTML += `<p>${data.message}</p>`;
+                        chatLog.scrollTop = chatLog.scrollHeight;
+                    }
                 };
 
                 document.querySelector('#chat-message-submit').onclick = function(e) {
@@ -137,7 +174,6 @@
                         'message': message
                     }));
                     messageInputDom.value = '';
-                    updateOnlineUsers(data.online_users);
                 };
 
                 function updateOnlineUsers(onlineUsers) {
@@ -152,6 +188,7 @@
             });
         </script>
     </div>
-    
+    <script src="../static/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>

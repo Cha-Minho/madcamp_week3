@@ -35,5 +35,11 @@ def create_chat_room(request):
     return render(request, 'chat/index.html')
 
 def chat_list(request):
+    if 'live' in chat_dict_module.chatDict:
+        del chat_dict_module.chatDict['live']
     chat_rooms = chat_dict_module.chatDict.items()  # chatDict의 변수명을 chat_rooms로 변경
-    return render(request, 'chat/chat_list.html', {'chat_rooms': chat_rooms})  # 변수명 chat_rooms로 수정
+    active_rooms = []
+    for room in chat_rooms:
+        if len(room[1]):
+            active_rooms.append(room)
+    return render(request, 'chat/chat_list.html', {'chat_rooms': active_rooms})  # 변수명 chat_rooms로 수정

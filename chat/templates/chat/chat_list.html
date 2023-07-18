@@ -2,17 +2,68 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>채팅방 목록</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 1000px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1000px;
+            height: 100px;
+            margin-left: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>채팅방 목록</h1>
-    <ul>
-        {% for chat_room, participant_list in chat_rooms %}
-            <li>
-                <a href="../chat/{{ chat_room }}/">{{ chat_room }}</a>
-                (참여자 수: {% if participant_list %}{{ participant_list }}{% else %}0{% endif %})
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <h1>채팅방 목록</h1>
+        <ul>
+            {% for chat_room, participant_list in chat_rooms %}
+                <li>
+                    <a href="../chat/{{ chat_room }}/">{{ chat_room }}</a>
+                    (참여자 수: {% if participant_list %}{{ participant_list|length }}{% else %}0{% endif %})
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
