@@ -47,6 +47,7 @@ body {
 
 /* 로그인/회원가입/로그아웃 버튼 스타일 */
 .auth-buttons a {
+  align-items: center;
   color: #fff;
   margin: 0 5px;
   text-decoration: none;

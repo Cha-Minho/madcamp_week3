@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+    <link rel="shortcut icon" href="../static/src/KakaoTalk_20230717_122510026.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOroROK</title>
     <link rel="stylesheet" href="../static/css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+    <meta charset="utf-8">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
+            width: 98.95%;
             margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f1f1f1;
         }
         .container {
-            width: 1000px;
+            width: 98.95%;
             text-align: center;
             padding: 20px;
         }
@@ -33,7 +37,7 @@
             margin: 0;
         }
 
-        li {
+        li2 {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -51,19 +55,51 @@
             color: #007BFF;
             text-decoration: none;
         }
+        .logo img {
+            width: 100px; /* 가로 너비 설정 */
+            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+        }
     </style>
 </head>
 <body>
+    <header class="header" style="width: 100%; height: auto;">
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../../accounts/static/src/hororok.png">
+            </div>
+          <div class="menu">
+            <ul>
+              <li><a href="{% url 'home' %}">홈</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a href="{% url 'live' %}">라이브</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a href="{% url 'replay' %}">동영상</a></li>
+              <li><a href="#">ㅣ</a></li>
+              <li><a id="community">커뮤니티</a></li>
+            </ul>
+          </div>
+          <div class="auth-buttons">
+            <a id="loginButton" href="{% url 'login' %}" >로그인</a>
+            <a id="signupButton" href="{% url 'signup' %}" >회원가입</a>
+            <div id="welcomeMessage" style="display: none;"></div>
+            <a id="logoutButton" href="{% url 'logout' %}" >로그아웃</a>
+          </div>
+          
+          </div>
+        </nav>
+    </header>
     <div class="container">
         <h1>채팅방 목록</h1>
         <ul>
             {% for chat_room, participant_list in chat_rooms %}
-                <li>
+                <li2>
                     <a href="../chat/{{ chat_room }}/">{{ chat_room }}</a>
                     (참여자 수: {% if participant_list %}{{ participant_list|length }}{% else %}0{% endif %})
-                </li>
+                </li2>
             {% endfor %}
         </ul>
     </div>
+    <script src="../static/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
 </body>
 </html>

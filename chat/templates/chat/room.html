@@ -78,14 +78,19 @@
             margin-bottom: 20px;
             overflow-y: scroll;
         }
+
+        .logo img {
+            width: 100px; /* 가로 너비 설정 */
+            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+        }
     </style>
 </head>
 <body>
     <header class="header" style="width: 100%; height: auto;">
         <nav class="navbar">
-          <div class="logo">
-            로고
-          </div>
+            <div class="logo">
+                <img src="../../accounts/static/src/hororok.png">
+            </div>
           <div class="menu">
             <ul>
               <li><a href="{% url 'home' %}">홈</a></li>
