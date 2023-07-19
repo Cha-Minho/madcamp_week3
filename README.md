@@ -8,7 +8,7 @@
 * 신개념 실시간 그림 도네이션
 * 미니 Youtube 형식의 다시보기 제공
 
-메인 페이지 사진
+![메인화면](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/146b5b2b-2987-4d84-8ae6-61e48740a773)
 
 
 ***
@@ -27,7 +27,7 @@
 ### 페이지 소개
 ### Tab 1 - 홈 화면
 
-여따가 메인화면 사진
+![메인화면](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/146b5b2b-2987-4d84-8ae6-61e48740a773)
 
 #### 주요 기능
 * 방송 미리보기를 제공합니다.
@@ -41,7 +41,8 @@
 
 ### Tab 2 - 라이브 스트리밍
 
-여따가 스트리밍 화면 사진
+![방송화면](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/f7c2412f-c98b-46ed-b305-37570694e34e)
+
 
 #### 주요 기능
 * 방송을 큰 화면으로 시청가능합니다.
@@ -54,7 +55,8 @@
 
 ### Tab 3 - 방송 다시보기
 
-여따가 동영상 올리는 창 사진
+![다시보기](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/991bdcec-1bf9-451e-ab20-ae7e861ffa17)
+
 
 #### 주요 기능
 * 방송 다시보기를 비롯한 모든 영상을 업로드 할 수 있습니다.
@@ -67,12 +69,15 @@
 
 ### Tab 4 - 커뮤니티 (대기방)
 
-여따가 사진 두 개 생성이랑 참여
+![채팅방](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/98092038-658c-4c19-99b3-20614dc1a019)
+
 
 #### 주요 기능
 * 여러 사람이 동시에 대화하는 채팅방 생성
 * 다른 사람이 만들어 둔 채팅방에 참여
 * 참여 중인 인원 닉네임 표시
+
+![inChatroom](https://github.com/Cha-Minho/madcamp_week3/assets/71549133/621f0eb5-cdd3-446b-995a-92a42458d4e0)
 
 #### 차후 추가될 기능
 * 사진, 동영상 등 보내기
