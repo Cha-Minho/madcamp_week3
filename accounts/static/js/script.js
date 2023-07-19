@@ -1,32 +1,29 @@
 const loginButton = document.getElementById("loginButton");
 const signupButton = document.getElementById("signupButton");
 const logoutButton = document.getElementById("logoutButton");
-const welcomeMessage = document.getElementById("welcomeMessage"); // 추가: 환영 메시지를 표시할 요소
+const welcomeMessage = document.getElementById("welcomeMessage");
 
 $(document).ready(function() {
   $.ajax({
-    url: '/get_session_data/',  // 서버의 API 엔드포인트 경로
+    url: '/get_session_data/',
     type: 'GET',
     success: function(data) {
-      // 세션 데이터 활용
       const username = data.username;
       const isAuthenticated = data.isAuthenticated;
 
       if (isAuthenticated === 'true') {
         console.log('사용자 인증됨:', username);
-        // 인증된 상태에서의 동작 수행
         loginButton.style.display = "none";
         signupButton.style.display = "none";
         logoutButton.style.display = "block";
-        welcomeMessage.textContent = username + "님 환영합니다"; // 추가: 환영 메시지 표시
-        welcomeMessage.style.display = "block"; // 추가: 환영 메시지 보이기
+        welcomeMessage.textContent = username + "님 환영합니다";
+        welcomeMessage.style.display = "block";
       } else {
         console.log('사용자 미인증');
-        // 비인증 상태에서의 동작 수행
         loginButton.style.display = "block";
         signupButton.style.display = "block";
         logoutButton.style.display = "none";
-        welcomeMessage.style.display = "none"; // 추가: 환영 메시지 숨기기
+        welcomeMessage.style.display = "none";
       }
     },
     error: function(error) {
@@ -38,7 +35,6 @@ $(document).ready(function() {
 });
 
 $("#community").on("click", function() {
-  // 새로운 채팅방 생성 또는 기존 채팅방 입장 선택 다이얼로그 표시
   Swal.fire({
     title: "커뮤니티 입장",
     text: "원하시는 버튼을 클릭하세요.",
@@ -84,7 +80,6 @@ $("#community").on("click", function() {
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       window.location.href = "/chat_list/";
     } else {
-      // 기존 채팅방 리스트 페이지로 이동 (페이지 주소에 따라 변경)
     }
   });
 });

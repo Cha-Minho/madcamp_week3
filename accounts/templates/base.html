@@ -49,7 +49,7 @@
 
     .img-container:nth-child(1) {
       z-index: 2;
-      margin-right: -100px;  /* You can adjust this to overlap more or less */
+      margin-right: -100px;
     }
 
     .img-container:nth-child(2) {
@@ -91,9 +91,9 @@
     }
 
     .recommended-section {
-      background-color: #e3e3e3; /* 진한 색으로 변경 */
+      background-color: #e3e3e3;
       padding: 30px 0;
-      text-align: center; /* 추천 채널 섹션의 내용 가운데 정렬 */
+      text-align: center;
     }
 
     .recommended-header {
@@ -132,8 +132,8 @@
       font-size: 18px;
     }
     .logo img {
-            width: 100px; /* 가로 너비 설정 */
-            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+            width: 100px;
+            height: auto;
     }
   </style>
 </head>
@@ -141,9 +141,12 @@
 <body>
   <header class="header">
     <nav class="navbar">
-      <div class="logo">
-        <img src="accounts/static/src/hororok.png">
-      </div>
+      <a href="{% url 'home' %}">
+        <div class="logo">
+          <img src="accounts/static/src/hororok.png" alt="로고">
+        </div>
+      </a>
+      
       <div class="menu">
         <ul>
           <li><a href="{% url 'home' %}">홈</a></li>
@@ -179,7 +182,7 @@
      
 
       <div class="main-container" style="width: 85%;" >
-        <section class="hero-section" style="text-align: center; padding: 5px 0;"> <!-- 세로 길이를 조절하기 위해 padding 값을 추가 -->
+        <section class="hero-section" style="text-align: center; padding: 5px 0;">
           <h1>호로록에 오신 것을 환영합니다</h1>
           <p>다양한 라이브 방송과 동영상을 즐겨보세요.</p>
         </section>
@@ -222,24 +225,24 @@
     var myprofile = document.getElementsByClassName('channel-image');
     if(Hls.isSupported()) {
       var hls = new Hls();
-      hls.loadSource('https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+      hls.loadSource('https://b881-192-249-19-234.ngrok-free.app/proxy/live.m3u8'); 
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.play();
       });
     }
     else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = 'https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+      video.src = 'https://b881-192-249-19-234.ngrok-free.app/proxy/live.m3u8';
       video.addEventListener('loadedmetadata', function() {
         video.play();
       });
     }
     video.addEventListener('click', function() {
-        window.location.href = "{% url 'live' %}"; // 여기에 실제 live.html 파일의 경로를 적어주세요
+        window.location.href = "{% url 'live' %}"; 
     });
     for(let i=0; i < myprofile.length; i++){
         myprofile[i].addEventListener('click', function() {
-            window.location.href = "{% url 'live' %}"; // 여기에 실제 live.html 파일의 경로를 적어주세요
+            window.location.href = "{% url 'live' %}"; 
         });
     }
     

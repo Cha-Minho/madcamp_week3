@@ -20,7 +20,9 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')  # 회원가입 후 로그인 페이지로 이동
+            return redirect('login') 
+        else:
+            form.add_error('username', '이미 존재하는 아이디거나 비밀번호가 일치하지 않습니다.')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -47,7 +49,6 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 def home(request):
-    # 홈 페이지에 필요한 로직을 작성합니다.
     return render(request, 'base.html')
 
 def user_logout(request):
@@ -56,8 +57,6 @@ def user_logout(request):
     request.session.modified = True
     return redirect('home')
 
-# def live_streaming_on(request):
-#     return render(request, 'live_streaming_on.html')
 
 def get_session_data(request):
     username = request.session.get('username')
@@ -88,9 +87,9 @@ def replay(request):
         title = request.POST.get('title')
         video = request.FILES.get('video')
         name = request.session['username']
-        if title and video:  # 제목과 비디오가 모두 제공된 경우만 객체를 생성
+        if title and video: 
             Broadcast.objects.create(title=title, video=video, name = name)
-            return HttpResponseRedirect(reverse('replay'))  # POST 요청 이후에 GET 요청으로 리디렉션
+            return HttpResponseRedirect(reverse('replay')) 
     
     broadcasts = Broadcast.objects.all().order_by('-id')
     return render(request, 'abc.html', {'broadcasts': broadcasts})

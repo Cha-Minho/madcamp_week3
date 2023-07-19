@@ -6,7 +6,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import chat_dict_module
 
-# Create your views here.
 def index(request):
     return render(request, 'chat/index.html', {})
 
@@ -37,9 +36,9 @@ def create_chat_room(request):
 def chat_list(request):
     if 'live' in chat_dict_module.chatDict:
         del chat_dict_module.chatDict['live']
-    chat_rooms = chat_dict_module.chatDict.items()  # chatDict의 변수명을 chat_rooms로 변경
+    chat_rooms = chat_dict_module.chatDict.items() 
     active_rooms = []
     for room in chat_rooms:
         if len(room[1]):
             active_rooms.append(room)
-    return render(request, 'chat/chat_list.html', {'chat_rooms': active_rooms})  # 변수명 chat_rooms로 수정
+    return render(request, 'chat/chat_list.html', {'chat_rooms': active_rooms}) 

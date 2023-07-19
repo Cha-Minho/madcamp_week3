@@ -15,9 +15,9 @@
           position: absolute;
           top: 100px;
           left: 0;
-          width: 80%;  /* 비디오 요소의 너비에 맞게 설정 */
-          height: 85%;  /* 비디오 요소의 높이에 맞게 설정 */
-          z-index: 4;  /* 비디오 요소 위에 위치하도록 설정 */
+          width: 80%;
+          height: 85%;
+          z-index: 4;
         }
         #main-container {
             margin-top: 60px;
@@ -35,12 +35,11 @@
             height: 100%;
         }
         #video {
-          width: 98%;  /* 비디오 요소의 너비를 컨테이너의 100%로 설정 */
-          height: 90%;  /* 비디오 요소의 높이를 컨테이너의 100%로 설정 */
-          object-fit: cover;  /* 비디오의 비율이 유지되면서 가능한 많은 영역을 채우도록 설정 */
-          z-index: 1;  /* 비디오를 캔버스 아래로 위치시키기 위해 */
-          position: relative;  /* z-index 속성이 적용되려면 position 속성이 지정되어야 함 */
-          /* display: none; */
+          width: 98%; 
+          height: 90%; 
+          object-fit: cover; 
+          z-index: 1; 
+          position: relative; 
         }
         #chat-log {
             height: 85%;
@@ -63,12 +62,12 @@
             align-items: center;
             justify-content: space-between;
             height: 30px;
-            width: 400px; /* Adjust this if you want more space between elements */
+            width: 400px;
         }
         #viewerCountSection {
             display: flex;
             align-items: center;
-            margin-left: 50px; /* distance from the donate button */
+            margin-left: 50px;
         }
         #viewerCount {
             margin-left: 10px;
@@ -86,17 +85,19 @@
           z-index: 3;
         }
         .logo img {
-            width: 100px; /* 가로 너비 설정 */
-            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+            width: 100px; 
+            height: auto;
         }
     </style>
 </head>
 <body>
   <header class="header">
     <nav class="navbar">
-      <div class="logo">
-        <img src="../accounts/static/src/hororok.png">
-      </div>
+      <a href="{% url 'home' %}">
+        <div class="logo">
+          <img src="../accounts/static/src/hororok.png" alt="로고">
+        </div>
+      </a>
       <div class="menu">
         <ul>
           <li><a href="{% url 'home' %}">홈</a></li>
@@ -121,10 +122,10 @@
     <div id="main-container">
       <div id="video-container">
         <video id="video" controls></video>
-        <div id="donation-section"> <!-- 이 div가 버튼과 viewerCount를 포함합니다 -->
+        <div id="donation-section">
             <button id="donateBtn">Donate</button>
-            <div id="viewerCountSection"> <!-- 이 div는 viewerCount와 그에 대한 아이콘을 포함합니다 -->
-                <img src="../static/src/person_icon.png" width="30px" height="30px" alt="Viewer icon" id="viewerIcon"> <!-- viewer 아이콘. 적절한 경로로 수정해야 합니다 -->
+            <div id="viewerCountSection">
+                <img src="../static/src/person_icon.png" width="30px" height="30px" alt="Viewer icon" id="viewerIcon"> 
                 <div id="viewerCount">0</div>
             </div>
             <div id="colorSelector">
@@ -167,10 +168,7 @@
         });
 
         drawArea.addEventListener('mousemove', function(e) {
-          // 사용자가 마우스를 움직이면서 그림을 계속 그리고 있는지 확인
           if (drawing) {
-            // 마우스 위치에 원을 그림
-            // 그림 데이터를 서버에 전송
             socket.send(JSON.stringify({
               type: 'draw',
               x: e.pageX - drawArea.offsetLeft,
@@ -183,23 +181,20 @@
         });
 
         drawArea.addEventListener('mouseup', function(e) {
-          // 사용자가 마우스 클릭을 끝냈음을 나타냄
           drawing = false;
         });
         colorInput = document.getElementById("colorPicker");
         colorInput.addEventListener('change', function() {
-          color = this.value; // 사용자가 선택한 색상으로 color 변수를 업데이트합니다
+          color = this.value;
         });
         function speakMessage(message) {
             var msg = new SpeechSynthesisUtterance(message);
-            msg.lang = 'ko-KR'; // 언어 설정 (한국어)
+            msg.lang = 'ko-KR';
             window.speechSynthesis.speak(msg);
         }
 
-        // Create WebSocket connection.
-        var socket = new WebSocket('wss://32b5-192-249-19-234.ngrok-free.app/ws/donations/');
+        var socket = new WebSocket('wss://b881-192-249-19-234.ngrok-free.app/ws/donations/');
 
-        // Connection opened
         socket.addEventListener('open', function (event) {
             socket.send(JSON.stringify({type: 'connection', message: 'Client connected'}));
         });
@@ -207,7 +202,6 @@
         
         var audio = new Audio("/static/src/donation.mp3")
         audio.volume = 0.7;
-        // Listen for messages
         socket.addEventListener('message', function (event) {
           var data = JSON.parse(event.data);
           var message = data.message;
@@ -224,11 +218,9 @@
             }, 3500);
           }
           else if(data.type === 'draw') {
-              // Draw received drawing data on the canvas
               if (data.done == "true") {
                   drawContext.clearRect(0, 0, drawContext.canvas.width, drawContext.canvas.height);
               } else {
-                  // Check if it's the first point
                   if (data.firstPoint) {
                       drawContext.beginPath();
                       drawContext.moveTo(data.x, data.y);
@@ -252,7 +244,7 @@
             var donationMessage = prompt("후원 메세지를 입력해주세요.:");
             socket.send(JSON.stringify({
               type: 'donation',
-              message: 'A donation has been made.', // 이 부분 추가
+              message: 'A donation has been made.',
               amount: donationAmount,
               dM: donationMessage,
             }));
@@ -262,7 +254,7 @@
 
         if(Hls.isSupported()) {
           var hls = new Hls();
-          hls.loadSource('https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8');  // 수정된 부분
+          hls.loadSource('https://b881-192-249-19-234.ngrok-free.app/proxy/live.m3u8'); 
           hls.attachMedia(video);
           hls.on(Hls.Events.MANIFEST_PARSED, function() {
             video.play();
@@ -270,7 +262,7 @@
         }
 
         else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          video.src = 'https://32b5-192-249-19-234.ngrok-free.app/proxy/live.m3u8';  // 수정된 부분
+          video.src = 'https://b881-192-249-19-234.ngrok-free.app/proxy/live.m3u8'; 
           video.addEventListener('loadedmetadata', function() {
             video.play();
           });
@@ -280,9 +272,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const chatLog = document.querySelector('#chat-log');
-            const userNameDisplay = document.querySelector('#user-name-display'); // 유저 이름을 보여줄 요소
+            const userNameDisplay = document.querySelector('#user-name-display'); 
 
-            // WebSocket 연결 설정과 이벤트 핸들러
             const chatSocket = new WebSocket(
                 'wss://' + window.location.host + '/ws/chat/' + roomName + '/'
             );
@@ -305,7 +296,6 @@
             chatSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
                 if (data.type === 'online_users') {
-                    // updateOnlineUsers(data.online_users);
                 } else {
                     chatLog.value += (data.message + '\n');
                     chatLog.scrollTop = chatLog.scrollHeight;
@@ -326,10 +316,10 @@
             document.querySelector('#chat-message-submit').onclick = function(e) {
                 const messageInputDom = document.querySelector('#chat-message-input');
                 const message = messageInputDom.value;
-                const username = getCookie('username');  // 유저 이름 가져오기
+                const username = getCookie('username');
                 chatSocket.send(JSON.stringify({
                     'message': message,
-                    'username': username  // 유저 이름 함께 보내기
+                    'username': username
                 }));
                 messageInputDom.value = '';
             };

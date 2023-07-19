@@ -19,9 +19,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hororok.settings')
 application = ProtocolTypeRouter({
     "http" : get_asgi_application(),
     "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack( # 추가
+        AuthMiddlewareStack( 
             URLRouter(
-                chat.routing.websocket_urlpatterns	# chat 은 routing.py 가 들어있는 앱 이름
+                chat.routing.websocket_urlpatterns
                 )
         )
     )

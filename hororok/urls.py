@@ -10,7 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', views.signup, name='signup'),
     path('login/', views.user_login, name='login'),
-    path('logout/', views.user_logout, name='logout'),  # 로그아웃 URL 패턴 추가
+    path('logout/', views.user_logout, name='logout'),
     path('live/', views.live, name='live'),
     path('get_session_data/', views.get_session_data, name='get_session_data'),
     path('chat/', views_chat.index, name='chat'),

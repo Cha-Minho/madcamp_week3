@@ -35,6 +35,9 @@
             list-style: none;
             padding: 0;
             margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         li2 {
@@ -49,6 +52,7 @@
             padding: 10px 20px;
             margin: 10px 0;
             border-radius: 5px;
+            width: calc(50% - 20px);
         }
 
         a {
@@ -56,17 +60,19 @@
             text-decoration: none;
         }
         .logo img {
-            width: 100px; /* 가로 너비 설정 */
-            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+            width: 100px;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <header class="header" style="width: 100%; height: auto;">
         <nav class="navbar">
-            <div class="logo">
-                <img src="../../accounts/static/src/hororok.png">
-            </div>
+            <a href="{% url 'home' %}">
+                <div class="logo">
+                  <img src="../accounts/static/src/hororok.png" alt="로고">
+                </div>
+              </a>
           <div class="menu">
             <ul>
               <li><a href="{% url 'home' %}">홈</a></li>

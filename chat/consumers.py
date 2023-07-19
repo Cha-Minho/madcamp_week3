@@ -10,7 +10,6 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 viewer_cnt = 0
-# 비동기식
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         username = self.scope["session"]["username"]
@@ -19,9 +18,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if username not in chat_dict_module.chatDict[self.room_name]:
                 chat_dict_module.chatDict[self.room_name].append(username)
         self.room_group_name = 'chat_%s' % self.room_name
-        print(chat_dict_module.chatDict)
 
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -33,17 +30,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.update_online_users(self.room_name)
 
     async def disconnect(self, close_code):
-        # Leave room group
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         if self.room_name != "live":
             username = self.scope["session"]["username"]
             chat_dict_module.chatDict[self.room_name].remove(username)
-            print(len(chat_dict_module.chatDict[self.room_name]), len(chat_dict_module.chatDict[self.room_name])==0)
             if len(chat_dict_module.chatDict[self.room_name]) == 0:
                 await self.delete_room_if_empty(self.room_name)
                 del chat_dict_module.chatDict[self.room_name]
                 self.update_online_users(self.room_name)
-            print(chat_dict_module.chatDict)
 
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -54,18 +48,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         })
         await self.update_online_users(self.room_name)
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        # username = text_data_json.get('username', 'anonymous')  # 유저 이름을 가져오되, 없으면 'anonymous'를 기본값으로 사용
         username = self.scope["session"]["username"]
-        # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': f'{username}: {message}'  # 유저 이름과 메시지 함께 보내기
+                'message': f'{username}: {message}'  
             }
         )
 
@@ -76,11 +67,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             room.delete()
         except ChatRoom.DoesNotExist:
             pass
-    # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
 
-        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message
         }))
@@ -112,7 +101,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
         self.drawing_rights[self.scope["session"]["username"]] = [0, time.time()]
         global viewer_cnt
         viewer_cnt += 1
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -127,8 +115,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
         global viewer_cnt
         viewer_cnt -= 1
         username = self.scope["session"]["username"]
-        # if username in self.drawing_rights:
-        #     del self.drawing_rights[username]  # new
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -137,7 +123,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
         json_data = json.dumps(d)
         await self.receive(json_data)
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_type = text_data_json.get('type')
@@ -147,15 +132,10 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
             donation_message = text_data_json.get('dM', '')
 
             if int(donation_amount) > 0:
-                # Create a new donation object
                 donation = Donation(donor=username, amount=donation_amount)
-                # Save the donation object in the database
                 await database_sync_to_async(donation.save)()
                 token = self.drawing_rights[username][0]
-                # Grant drawing rights
-                self.drawing_rights[username] = [token + int(donation_amount) // 1000, time.time()]  # new
-
-                # Send message to room group
+                self.drawing_rights[username] = [token + int(donation_amount) // 1000, time.time()] 
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -171,9 +151,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
                 if  time_cha > 1:
                     self.drawing_rights[username][0] -= time_cha // 1
                     self.drawing_rights[username][1] = time.time()
-                # else:
-                #     self.drawing_rights[username][0] = 0
-                #     self.drawing_rights[username][1] = time.time()
                 x = text_data_json.get('x')
                 y = text_data_json.get('y')
                 radius = text_data_json.get('radius')
@@ -219,7 +196,6 @@ class DonationConsumer(AsyncJsonWebsocketConsumer):
             'type': 'viewer_update',
             'message': message
         }))
-    # Receive message from room group
     async def donation_message(self, event):
         message = event['message']
         await self.send(text_data=json.dumps({

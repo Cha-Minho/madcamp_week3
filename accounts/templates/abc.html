@@ -9,31 +9,31 @@
     <style>
         button {
             display: inline-block;
-            background-color: #ff7f00; /* 기본 배경색 */
-            background-image: linear-gradient(45deg, #ff7f00, #ffbb00); /* 그라디언트 배경색 */
-            border: none; /* 테두리 제거 */
-            color: #ffffff; /* 텍스트 색상 */
+            background-color: #ff7f00; 
+            background-image: linear-gradient(45deg, #ff7f00, #ffbb00);
+            border: none; 
+            color: #ffffff; 
             text-align: center;
             font-size: 16px;
             transition: all 0.5s;
             cursor: pointer;
             margin: 5px;
-            border-radius: 10px; /* 둥근 모서리 */
+            border-radius: 10px;
             padding: 10px 24px;
             width: 200px;
-            box-shadow: 0 5px #999; /* 그림자 효과 */
+            box-shadow: 0 5px #999;
             margin-top: 20px !important;
         }
 
-        button:hover { /* 마우스 호버 시의 효과 */
-            background-image: linear-gradient(45deg, #ffbb00, #ff7f00); /* 그라디언트 배경색 방향 변경 */
-            box-shadow: 0 5px #666; /* 그림자 색상 변경 */
-            transform: translateY(-2px); /* 약간 위로 이동 */
+        button:hover { 
+            background-image: linear-gradient(45deg, #ffbb00, #ff7f00); 
+            box-shadow: 0 5px #666; 
+            transform: translateY(-2px); 
         }
 
-        button:active { /* 클릭 시의 효과 */
-            box-shadow: 0 2px #666; /* 그림자 크기 축소 */
-            transform: translateY(2px); /* 원래 위치로 복귀 */
+        button:active { 
+            box-shadow: 0 2px #666; 
+            transform: translateY(2px); 
         }
         .replay {
             display: flex;
@@ -79,51 +79,53 @@
             padding: 10px;
             border-radius: 5px;
             border: none;
-            box-sizing: border-box; /* padding과 border가 width에 포함되도록 설정 */
+            box-sizing: border-box;
         }
 
         #uploadForm input[type="submit"] {
             display: block;
-            background-color: #ff7f00; /* 기본 배경색 */
-            background-image: linear-gradient(45deg, #ff7f00, #ffbb00); /* 그라디언트 배경색 */
-            border: none; /* 테두리 제거 */
-            color: #ffffff; /* 텍스트 색상 */
+            background-color: #ff7f00;
+            background-image: linear-gradient(45deg, #ff7f00, #ffbb00); 
+            border: none;
+            color: #ffffff;
             text-align: center;
             font-size: 16px;
             transition: all 0.5s;
             cursor: pointer;
             margin: 5px;
-            border-radius: 10px; /* 둥근 모서리 */
+            border-radius: 10px;
             padding: 10px 24px;
             width: 200px;
-            box-shadow: 0 5px #999; /* 그림자 효과 */
+            box-shadow: 0 5px #999;
             margin-top: 20px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        #uploadForm input[type="submit"]:hover { /* 마우스 호버 시의 효과 */
-            background-image: linear-gradient(45deg, #ffbb00, #ff7f00); /* 그라디언트 배경색 방향 변경 */
-            box-shadow: 0 5px #666; /* 그림자 색상 변경 */
-            transform: translateY(-2px); /* 약간 위로 이동 */
+        #uploadForm input[type="submit"]:hover {
+            background-image: linear-gradient(45deg, #ffbb00, #ff7f00);
+            box-shadow: 0 5px #666;
+            transform: translateY(-2px);
         }
 
-        #uploadForm input[type="submit"]:active { /* 클릭 시의 효과 */
-            box-shadow: 0 2px #666; /* 그림자 크기 축소 */
-            transform: translateY(2px); /* 원래 위치로 복귀 */
+        #uploadForm input[type="submit"]:active {
+            box-shadow: 0 2px #666;
+            transform: translateY(2px);
         }
         .logo img {
-            width: 100px; /* 가로 너비 설정 */
-            height: auto; /* 세로 높이는 가로 너비에 맞게 자동 조절됩니다 */
+            width: 100px;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <header class="header">
         <nav class="navbar">
-            <div class="logo">
-                <img src="../accounts/static/src/hororok.png">
-            </div>
+            <a href="{% url 'home' %}">
+                <div class="logo">
+                  <img src="../accounts/static/src/hororok.png" alt="로고">
+                </div>
+              </a>
             <div class="menu">
                 <ul>
                     <li><a href="{% url 'home' %}">홈</a></li>
@@ -183,7 +185,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
     <script>
         $('#uploadButton').click(function(){
-            $('#uploadForm').slideToggle(); // 클릭할 때마다 폼이 나타났다 사라지게 함
+            $('#uploadForm').slideToggle();
         });
     </script>
 </body>

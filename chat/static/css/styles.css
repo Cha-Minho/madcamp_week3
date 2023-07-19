@@ -6,27 +6,23 @@ body {
   background-color: #f1f1f1;
 }
 
-/* 헤더 스타일 */
 .header {
   background-color: #333;
   color: #fff;
   padding: 10px;
 }
 
-/* 네비게이션 바 스타일 */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* 로고 스타일 */
 .logo {
   font-size: 24px;
   font-weight: bold;
 }
 
-/* 메뉴 스타일 */
 .menu ul {
   list-style: none;
   display: flex;
@@ -45,7 +41,6 @@ body {
   text-decoration: underline;
 }
 
-/* 로그인/회원가입/로그아웃 버튼 스타일 */
 .auth-buttons a {
   align-items: center;
   color: #fff;
@@ -56,7 +51,6 @@ body {
   border-radius: 5px;
 }
 
-/* 히어로 섹션 스타일 */
 .hero-section {
   padding: 50px 0;
   background-color: #fff;
@@ -66,7 +60,6 @@ body {
   font-size: 36px;
 }
 
-/* 실시간 생방송 섹션 스타일 */
 .featured-section {
   padding: 30px 0;
   background-color: #f9f9f9;
@@ -78,19 +71,16 @@ body {
   margin-bottom: 20px;
 }
 
-/* 동영상 컨테이너 스타일 */
 #video-container {
-  display: inline-block; /* 왼쪽 정렬을 위해 변경 */
-  vertical-align: top; /* 왼쪽 상단 정렬 추가 */
+  display: inline-block;
+  vertical-align: top;
 }
 
-/* 동영상 스타일 */
 #video {
   max-width: 100%;
-  margin: 0 auto; /* 가로 중앙 정렬 추가 */
+  margin: 0 auto;
 }
 
-/* 커뮤니티 섹션 스타일 */
 .community-section {
   padding: 30px 0;
   background-color: #fff;
@@ -102,7 +92,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* 푸터 스타일 */
 .footer {
   background-color: #333;
   color: #fff;
@@ -110,7 +99,6 @@ body {
   text-align: center;
 }
 
-/* 링크 스타일 */
 a {
   color: #007bff;
   text-decoration: none;
